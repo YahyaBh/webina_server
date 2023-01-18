@@ -11,7 +11,7 @@ class WebsitesController extends Controller
 {
     public function index(Websites $website)
     {
-        return Websites::select('website_name', 'price', 'token', 'category', 'Developing Time')->get();
+        return Websites::select('website_name', 'price', 'token', 'category', 'Developing_Time')->get();
     }
 
     public function show(Websites $product)
@@ -23,15 +23,18 @@ class WebsitesController extends Controller
 
     public function store(Request $request)
     {
+
+
         $request->validate([
             'website_name' => 'required',
             'token' => 'required',
             'price' => 'required',
             'category' => 'required',
-            'Developing Time' => ''
+            'Developing_Time' => 'required'
         ]);
 
         try {
+
             Websites::create($request->post());
 
             return response()->json([

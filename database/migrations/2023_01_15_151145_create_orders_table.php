@@ -13,13 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('websites', function (Blueprint $table) {
+        Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('website_name');
-            $table->string('token', 64)->unique()->default('0000-0000-0000-0000-0000');
-            $table->string('category')->nullable();
-            $table->integer('price');
-            $table->string('Developing_Time')->default('1 to 20 days');
+            $table->foreignId('user_id');
+            $table->foreignId('website_id');
+            $table->string('toekn')->default('0000-0000-0000-0000-0000');
             $table->timestamps();
         });
     }
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('websites');
+        Schema::dropIfExists('orders');
     }
 };

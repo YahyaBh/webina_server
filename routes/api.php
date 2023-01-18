@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebsitesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,3 +25,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/websites', [WebsitesController::class , 'index'])->name('home');
 Route::post('/websites/create', [WebsitesController::class , 'store'])->name('create');
 Route::delete('/website/{token}', [WebsitesController::class , 'delete'])->name('delete');
+
+
+
+
+Route::post('/signin', [UserController::class, 'login'])->name('login');
+Route::post('/signup', [UserController::class, 'register'])->name('register');
+
