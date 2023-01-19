@@ -1,7 +1,5 @@
 {
-    "name": "Vortex",
     "type": "project",
-    "description": "Make your dream website , with only your imagination",
     "keywords": ["website", "laravel" , "project"],
     "license": "MIT",
     "require": {
@@ -9,7 +7,10 @@
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^3.0",
-        "laravel/tinker": "^2.7"
+        "laravel/socialite": "^5.6",
+        "laravel/tinker": "^2.7",
+        "laravel/ui": "^4.2",
+        "tymon/jwt-auth": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

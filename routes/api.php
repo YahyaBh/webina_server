@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebsitesController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,10 +24,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
+Auth::routes([
+    'verify' => true
+]);
 
-Route::get('/websites', [WebsitesController::class , 'index'])->name('home');
-Route::post('/websites/create', [WebsitesController::class , 'store'])->name('create');
-Route::delete('/website/{token}', [WebsitesController::class , 'delete'])->name('delete');
+Route::get('/websites', [WebsitesController::class, 'index'])->name('home');
+Route::post('/websites/create', [WebsitesController::class, 'store'])->name('create');
+Route::delete('/website/{token}', [WebsitesController::class, 'delete'])->name('delete');
 
 
 
@@ -32,3 +38,13 @@ Route::delete('/website/{token}', [WebsitesController::class , 'delete'])->name(
 Route::post('/signin', [UserController::class, 'login'])->name('login');
 Route::post('/signup', [UserController::class, 'register'])->name('register');
 
+
+Route::group(['middleware' => ['auth']], function() {
+    Route::get('/email/verify', 'VerificationController@show')->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', 'VerificationController@verify')->name('verification.verify')->middleware(['signed']);
+    Route::post('/email/resend', 'VerificationController@resend')->name('verification.resend');
+});
+
+
+Route::get('/auth/google/login', [AuthController::class, 'redirect'])->name('redirectToLogin');
+Route::get('/auth/google/call-back', [AuthController::class, 'callbackGoogle'])->name('loginWithGoogle');
