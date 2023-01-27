@@ -28,22 +28,21 @@ class UserController extends Controller
             'email' => 'required|email',
             'password' => 'required|min:8',
         ]);
-
-        // $hashedPassword = Hash::make($request->password);
-
         $user = User::where('email', $request->email)->first();
 
-        // if (Hash::check($user->password, $hashedPassword)) {
-        return response()->json([
-            'message' => 'Login successful',
-            'access_token' => $this->access_token,
-            'user' => $user
-        ]);
-        // } else {
-        //     return response()->json([
-        //         'message' => 'Password does not match'
-        //     ], 401);
-        // }
+        // $hashedPassword = Hash::make('123123123');
+
+        if ($user->password == $request->password) {
+            return response()->json([
+                'message' => 'Login successful',
+                'access_token' => $this->access_token,
+                'user' => $user,
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Password does not match',
+            ], 401);
+        }
     }
 
 
@@ -54,6 +53,7 @@ class UserController extends Controller
             'name' => 'required',
             'email' => 'required|email',
             'password' => 'required|min:8',
+            'password_confirmation' => 'required|same:password',
         ]);
 
 
@@ -65,7 +65,7 @@ class UserController extends Controller
             ], 400);
         } else {
             $postArray = $request->all();
-            // $postArray['password'] = Hash::make($request->password);
+            // $postArray['password'] = Hash::make('123123123');
 
             $user = User::create($postArray);
 
