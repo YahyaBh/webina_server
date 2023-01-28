@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Facades\Hash;
+
 class User extends Authenticatable implements JWTSubject , MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -22,7 +24,8 @@ class User extends Authenticatable implements JWTSubject , MustVerifyEmail
         'name',
         'email',
         'password',
-        'google_id'
+        'google_id',
+        'avatar',
     ];
 
     /**
@@ -61,5 +64,14 @@ class User extends Authenticatable implements JWTSubject , MustVerifyEmail
         return [];
     }
 
+
+    public function setPasswordAttribute($password) {
+        if(trim($password) === '') {
+            return;
+        }
+
+        $this->attributes['password'] = bcrypt($password);
+        
+    }
 
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebsitesController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -46,5 +47,9 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 
-Route::get('/auth/google/login', [AuthController::class, 'redirect'])->name('redirectToLogin');
-Route::get('/auth/google/call-back', [AuthController::class, 'callbackGoogle'])->name('loginWithGoogle');
+Route::get('auth/google', [AuthController::class, 'redirectToAuth']);
+Route::get('auth/callback', [AuthController::class, 'handleAuthCallback']);
+
+
+
+Route::post('message/contact' , [ContactController::class, 'store_message'])->name('message.contact');

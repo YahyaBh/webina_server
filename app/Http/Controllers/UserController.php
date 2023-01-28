@@ -28,19 +28,34 @@ class UserController extends Controller
             'email' => 'required|email',
             'password' => 'required|min:8',
         ]);
+
         $user = User::where('email', $request->email)->first();
 
-        // $hashedPassword = Hash::make('123123123');
 
-        if ($user->password == $request->password) {
-            return response()->json([
-                'message' => 'Login successful',
-                'access_token' => $this->access_token,
-                'user' => $user,
-            ]);
+        if ($user) {
+            if (Hash::check($request->password, $user->password)) {
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => $user->name . ' Signed In successfully',
+                    'access_token' => $this->access_token,
+                    'user' => $user,
+                ], 200);
+            } else if (!Hash::check($request->password, $user->password)) {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Password does not match',
+                ], 401);
+            } else {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Something went wrong',
+                ], 401);
+            }
         } else {
             return response()->json([
-                'message' => 'Password does not match',
+                'status' => 'failed',
+                'message' => 'User does not exist',
             ], 401);
         }
     }
@@ -59,22 +74,27 @@ class UserController extends Controller
 
         $emailFound = User::where('email', $request->email)->first();
 
-        if ($emailFound) {
+        if (!$emailFound) {
+
+            $postArray = $request->all();
+
+            User::create($postArray);
+            $userFounded = User::where('email', $request->email);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => $request->name . ' Signed Up successfully',
+                'access_token' => $this->access_token,
+                'user' => $userFounded
+            ]);
+        } else if ($emailFound) {
             return response()->json([
                 'message' => 'Email already exists'
             ], 400);
         } else {
-            $postArray = $request->all();
-            // $postArray['password'] = Hash::make('123123123');
-
-            $user = User::create($postArray);
-
-
             return response()->json([
-                'status' => 'success',
-                'access_token' => $this->access_token,
-                'user' => $postArray
-            ]);
+                'message' => 'Something went wrong'
+            ], 403);
         }
     }
 }
