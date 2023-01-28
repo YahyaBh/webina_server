@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -21,6 +24,28 @@ class UserController extends Controller
     }
 
 
+    public function profile(Request $request)
+    {
+        $request->validate([
+            'remember_token' => 'required',
+            'email' => 'required|email',
+        ]);
+
+        $user = User::where('remember_token', $request->remember_token)->first();
+
+        if ($user !== null) {
+            return response()->json([
+                'status' => 'success',
+                'access_token' => $this->access_token,
+                'user' => $user,
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Something went wrong',
+            ], 401);
+        }
+    }
 
     public function login(Request $request)
     {
@@ -77,15 +102,15 @@ class UserController extends Controller
         if (!$emailFound) {
 
             $postArray = $request->all();
+            $postArray['remember_token'] = $this->access_token;
 
             User::create($postArray);
-            $userFounded = User::where('email', $request->email);
 
             return response()->json([
                 'status' => 'success',
                 'message' => $request->name . ' Signed Up successfully',
                 'access_token' => $this->access_token,
-                'user' => $userFounded
+                'user' => $postArray
             ]);
         } else if ($emailFound) {
             return response()->json([
@@ -96,5 +121,17 @@ class UserController extends Controller
                 'message' => 'Something went wrong'
             ], 403);
         }
+    }
+
+
+
+    public function logout()
+    {
+        Session::flush();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Signed Out successfully',
+        ], 200);
     }
 }

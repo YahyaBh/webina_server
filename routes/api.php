@@ -38,7 +38,8 @@ Route::delete('/website/{token}', [WebsitesController::class, 'delete'])->name('
 
 Route::post('/signin', [UserController::class, 'login'])->name('login');
 Route::post('/signup', [UserController::class, 'register'])->name('register');
-
+Route::post('/user' , [UserController::class, 'profile'])->name('profile');
+Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/email/verify', 'VerificationController@show')->name('verification.notice');
