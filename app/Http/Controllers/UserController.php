@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Exception;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,7 +32,7 @@ class UserController extends Controller
             'email' => 'required|email',
         ]);
 
-        $user = User::where('remember_token', $request->remember_token)->first();
+        $user = User::where('email', $request->email)->first();
 
         if ($user !== null) {
             return response()->json([
@@ -124,14 +125,105 @@ class UserController extends Controller
     }
 
 
-
-    public function logout()
+    public function update(Request $request)
     {
-        Session::flush();
+        $user = User::where('email', $request->email)->first();;
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+        if (Hash::check($request->password, $user->password)) {
+            $user->password = $request->input(Hash::make('new_password'));
+        }
+        $user->remember_token = $request->input('remember_token');
+        $user->update();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Signed Out successfully',
+            'message' => 'User updated successfully',
+            'user' => $user,
+            'token' => $user->remember_token,
+            'password' => $user->password,
+            'hashed_password' => $request->input(Hash::make('password'))
         ], 200);
+
+
+        // if ($user) {
+
+        //     if($request->hasFile('image')) {
+
+        //     }
+
+        //     $user->name = $request->name;
+        //     $user->email = $request->email;
+        //     $user->remember_token = $request->remember_token;
+        //     dd($user);
+
+        //     if (Hash::check($request->password, $user->password)) {
+
+        //         dd($user);
+
+        //     } else {
+        //         return response()->json([
+        //             'status' => 'failed',
+        //             'message' => 'Password does not match',
+        //         ], 402);
+        //     }
+
+
+        //     return response()->json([
+        //         'status' => 'success',
+        //         'message' => 'User updated successfully',
+        //         'user' => $user,
+        //         'token' => $user->remember_token,
+        //     ], 200);
+        // } else {
+        //     return response()->json([
+        //         'status' => 'failed',
+        //         'message' => 'Something went wrong , while updating user',
+        //     ], 402);
+        // }
+    }
+
+
+    public function logout()
+    {
+        $cookie = Cookie::forget('token');
+        try {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Signed Out successfully',
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Something went wrong , while logging out',
+            ], 402);
+        }
+    }
+
+
+    public function delete(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password_check' => 'required',
+            ''
+        ]);
+
+
+        $user = User::where('email', $request->email)->first();
+
+
+        if ($user && Hash::check($request->password_check, $user->password)) {
+            $user->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User Deleted successfully',
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Password does not match our records',
+            ], 401);
+        }
     }
 }
