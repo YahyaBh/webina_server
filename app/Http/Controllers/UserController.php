@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\EmailVerification;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
@@ -30,51 +33,92 @@ class UserController extends Controller
     public function sendVerificationEmail(Request $request)
     {
 
-        // $data = [
-        //     'email'  => $request->input('email'),
-        //     'token' => $request->input('token'),
-        // ];
+        $data = [
+            'email'  => $request->input('email'),
+            'token' => $request->input('token'),
+        ];
 
-        // Mail::send($data['email'], ['data1' => $data], function ($m) {
-        //     $m->to('gamesy865@gmail.com')->subject('Contact Form Mail!');
-        // });
+        $user = User::where('email', $data['email'])->first();
 
 
-        return response()->json(["message" => "Email sent successfully."]);
+        if ($user) {
+
+            Mail::to($user->email)->send(new EmailVerification($user, $data['token']));
+
+            return response()->json(["message" => "Email sent successfully.", 'user' => $user], 200);
+        }
+        //  catch (Exception $e) {
+
+        //     return response()->json(["message" => $e->getMessage()], 401);
+
+        // }
+        else {
+            return response()->json(["message" => "Email didn't sent , please try again later."], 401);
+        }
     }
+
 
 
     public function verifyEmail($id, $token, $email)
     {
 
-        $user = User::where('id', $id)->first();
+        $user = User::where('email', $email)->first();
 
 
-        // if ($user->remember_token == $token) {
-        if ($user->email == $email) {
-            if ($user->email_verified_at) {
-                return response()->json([
-                    'status' => 'success',
-                    "message" => "Email already verified.",
-                    'access_token' => $user->remember_token,
-                    'user' => $user
-                ], 200);
-            } else {
-                $user->email_verified_at = Carbon::now();
-                $user->save();
 
-                return response()->json([
-                    'status' => 'success',
-                    "message" => "Email verified succefully.",
-                    'access_token' => $user->remember_token,
-                    'user' => $user
-                ], 200);
-            }
-        } else {
+
+        $user->email_verified_at = Carbon::now();
+        $user->save();
+
+        return response()->json([
+            'status' => 'success',
+            "message" => "Email verified succefully.",
+            'access_token' => $user->remember_token,
+            'user' => $user
+        ], 200);
+        // } else if ($user->email_verified_at !== null) {
+
+
+        //     return response()->json([
+        //         'status' => 'success',
+        //         "message" => "Email already verified.",
+        //         'access_token' => $user->remember_token,
+        //         'user' => $user
+        //     ], 200);
+
+        //     // return view('Emails.email_verified')->with(['user' => $user]);
+        // } else {
+        //     return response()->json([
+        //         'status' => 'failed',
+        //         "message" => "Something went wrong. Please try again.",
+        //     ], 401);
+        // }
+    }
+
+
+    public function checkVerify(Request $request)
+    {
+
+        $user = User::where('email', $request->input('email'))->first();
+
+
+
+        if ($user && $user->email_verified_at) {
+
+            return response()->json([
+                'status' => 'success',
+                "message" => "Email verified succefully.",
+                'access_token' => $user->remember_token,
+                'user' => $user
+            ], 200);
+        } else if ($user->email_verified_at !== null) {
+
+
             return response()->json([
                 'status' => 'failed',
-                "message" => "Something went wrong. Please try again.",
+                "message" => "Email is not verified verified.",
             ], 401);
+
         }
     }
 
@@ -161,13 +205,13 @@ class UserController extends Controller
             $postArray = $request->all();
             $postArray['remember_token'] = $this->access_token;
             $user = User::create($postArray);
-            event(new Registered($user));
 
             return response()->json([
                 'status' => 'success',
                 'message' => $request->name . ' Signed Up successfully',
                 'access_token' => $this->access_token,
-                'user' => $postArray
+                'user' => $postArray,
+                'id' => $user->id,
             ]);
         } else if ($emailFound) {
             return response()->json([
