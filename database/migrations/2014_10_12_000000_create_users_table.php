@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('google_id')->unique()->nullable();
-            $table->string('avatar')->default('https://icons.veryicon.com/png/o/internet--web/prejudice/user-128.png');
+            $table->string('avatar')->default('http://localhost:3000/Images/user_1.png');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->rememberToken();

@@ -20,10 +20,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 
 Auth::routes([
     'verify' => true
@@ -42,13 +38,9 @@ Route::post('/user' , [UserController::class, 'profile'])->name('profile');
 Route::post('/user/update' , [UserController::class, 'update'])->name('update');
 Route::post('/user/delete', [UserController::class, 'delete'])->name('delete');
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+Route::post('/email/verification' , [UserController::class, 'sendVerificationEmail'])->name('verification');
+Route::post('/email/verify/{id}/{token}/{email}' , [UserController::class, 'verifyEmail'])->name('verify_email');
 
-
-Route::group(['middleware' => ['auth']], function () {
-    Route::get('/email/verify', 'VerificationController@show')->name('verification.notice');
-    Route::get('/email/verify/{id}/{hash}', 'VerificationController@verify')->name('verification.verify')->middleware(['signed']);
-    Route::post('/email/resend', 'VerificationController@resend')->name('verification.resend');
-});
 
 
 Route::get('auth/google', [AuthController::class, 'redirectToAuth']);

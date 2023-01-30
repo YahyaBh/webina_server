@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Exception;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 
@@ -23,6 +26,59 @@ class UserController extends Controller
     {
         $this->access_token = uniqid(base64_encode(Str::random(40)));
     }
+
+    public function sendVerificationEmail(Request $request)
+    {
+
+        // $data = [
+        //     'email'  => $request->input('email'),
+        //     'token' => $request->input('token'),
+        // ];
+
+        // Mail::send($data['email'], ['data1' => $data], function ($m) {
+        //     $m->to('gamesy865@gmail.com')->subject('Contact Form Mail!');
+        // });
+
+
+        return response()->json(["message" => "Email sent successfully."]);
+    }
+
+
+    public function verifyEmail($id, $token, $email)
+    {
+
+        $user = User::where('id', $id)->first();
+
+
+        // if ($user->remember_token == $token) {
+        if ($user->email == $email) {
+            if ($user->email_verified_at) {
+                return response()->json([
+                    'status' => 'success',
+                    "message" => "Email already verified.",
+                    'access_token' => $user->remember_token,
+                    'user' => $user
+                ], 200);
+            } else {
+                $user->email_verified_at = Carbon::now();
+                $user->save();
+
+                return response()->json([
+                    'status' => 'success',
+                    "message" => "Email verified succefully.",
+                    'access_token' => $user->remember_token,
+                    'user' => $user
+                ], 200);
+            }
+        } else {
+            return response()->json([
+                'status' => 'failed',
+                "message" => "Something went wrong. Please try again.",
+            ], 401);
+        }
+    }
+
+
 
 
     public function profile(Request $request)
@@ -104,8 +160,8 @@ class UserController extends Controller
 
             $postArray = $request->all();
             $postArray['remember_token'] = $this->access_token;
-
-            User::create($postArray);
+            $user = User::create($postArray);
+            event(new Registered($user));
 
             return response()->json([
                 'status' => 'success',
