@@ -28,7 +28,7 @@ Auth::routes([
 Route::get('/websites', [WebsitesController::class, 'index'])->name('home');
 Route::post('/websites/create', [WebsitesController::class, 'store'])->name('create');
 Route::delete('/website/{token}', [WebsitesController::class, 'delete'])->name('delete');
-
+Route::post('/recent/websites', [WebsitesController::class, 'recent_websites'])->name('recent');
 
 
 

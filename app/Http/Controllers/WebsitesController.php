@@ -12,13 +12,32 @@ class WebsitesController extends Controller
 {
 
 
-    private $access_token;
+    private $website_token;
 
     public function __construct()
     {
-        $this->access_token = uniqid(base64_encode(Str::random(40)));
+        $this->website_token = uniqid(base64_encode(Str::random(20)));
     }
 
+
+    public function recent_websites()
+    {
+
+        $websites = Websites::orderBy('created_at', 'desc')->take(4)->get();
+
+
+        if ($websites) {
+            return response()->json([
+                'status' => 'success',
+                'websites' => $websites
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error while getting Websites',
+            ]);
+        }
+    }
 
     public function index()
     {
@@ -38,7 +57,13 @@ class WebsitesController extends Controller
 
     public function show(Websites $websites)
     {
+
+
         try {
+
+
+
+
             return response()->json([
                 'status' => 'success',
                 'websites' => $websites
@@ -53,17 +78,17 @@ class WebsitesController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'website_name' => 'required',
-            'token' => 'required',
-            'price' => 'required',
-            'category' => 'required',
-            'Developing_Time' => 'required'
-        ]);
 
         try {
 
-            Websites::create($request->post());
+            Websites::create([
+                'website_name' => $request->website_name,
+                'price' => $request->price,
+                'category' => $request->category,
+                'Developing_time' => $request->Developing_time,
+                'image' => $request->image,
+                'token' => $this->website_token
+            ]);
 
             return response()->json([
                 'message' => 'Product Created Successfully!!'
@@ -71,7 +96,7 @@ class WebsitesController extends Controller
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return response()->json([
-                'message' => 'Something goes wrong while creating a product!!'
+                'message' => 'Something goes wrong while creating a product!!' . $e
             ], 500);
         }
     }
