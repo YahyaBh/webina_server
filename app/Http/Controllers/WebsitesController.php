@@ -2,29 +2,57 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Website;
 use App\Models\Websites;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+
 
 class WebsitesController extends Controller
 {
-    public function index(Websites $website)
+
+
+    private $access_token;
+
+    public function __construct()
     {
-        return Websites::select('website_name', 'price', 'token', 'category', 'Developing_Time')->get();
+        $this->access_token = uniqid(base64_encode(Str::random(40)));
     }
 
-    public function show(Websites $product)
+
+    public function index()
     {
-        return response()->json([
-            'product' => $product
-        ]);
+        $websites = Websites::get();
+        try {
+            return response()->json([
+                'status' => 'success',
+                'websites' => $websites
+            ], 200);
+        } catch (\Exception) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error while getting Websites',
+            ]);
+        }
+    }
+
+    public function show(Websites $websites)
+    {
+        try {
+            return response()->json([
+                'status' => 'success',
+                'websites' => $websites
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function store(Request $request)
     {
-
-
         $request->validate([
             'website_name' => 'required',
             'token' => 'required',
