@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationPusher as EventsNotificationPusher;
 use App\Mail\EmailVerification;
 use App\Models\User;
 use Carbon\Carbon;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-
+use NotificationPusher;
 
 class UserController extends Controller
 {
@@ -118,7 +119,6 @@ class UserController extends Controller
                 'status' => 'failed',
                 "message" => "Email is not verified verified.",
             ], 401);
-
         }
     }
 
@@ -150,6 +150,12 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
+
+
+        event(new EventsNotificationPusher('hello world'));
+
+
+
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|min:8',
