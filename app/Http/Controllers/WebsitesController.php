@@ -55,18 +55,17 @@ class WebsitesController extends Controller
         }
     }
 
-    public function show(Websites $websites)
+    public function show($token)
     {
+
+        $website = Websites::where('token', $token)->first();
 
 
         try {
 
-
-
-
             return response()->json([
                 'status' => 'success',
-                'websites' => $websites
+                'website' => $website
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
