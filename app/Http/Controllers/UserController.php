@@ -31,6 +31,12 @@ class UserController extends Controller
         $this->access_token = uniqid(base64_encode(Str::random(40)));
     }
 
+    public function return() {
+        return response()->json([
+            'hahahaha' => 'blan asata khoya merhba'
+        ]);
+    }
+
     public function sendVerificationEmail(Request $request)
     {
 
@@ -233,7 +239,10 @@ class UserController extends Controller
 
     public function update(Request $request)
     {
-        $user = User::where('email', $request->email)->first();;
+        $user = User::where('email', $request->email)->first();
+
+
+
         $user->name = $request->input('name');
         $user->email = $request->input('email');
         if (Hash::check($request->password, $user->password)) {
@@ -250,43 +259,6 @@ class UserController extends Controller
             'password' => $user->password,
             'hashed_password' => $request->input(Hash::make('password'))
         ], 200);
-
-
-        // if ($user) {
-
-        //     if($request->hasFile('image')) {
-
-        //     }
-
-        //     $user->name = $request->name;
-        //     $user->email = $request->email;
-        //     $user->remember_token = $request->remember_token;
-        //     dd($user);
-
-        //     if (Hash::check($request->password, $user->password)) {
-
-        //         dd($user);
-
-        //     } else {
-        //         return response()->json([
-        //             'status' => 'failed',
-        //             'message' => 'Password does not match',
-        //         ], 402);
-        //     }
-
-
-        //     return response()->json([
-        //         'status' => 'success',
-        //         'message' => 'User updated successfully',
-        //         'user' => $user,
-        //         'token' => $user->remember_token,
-        //     ], 200);
-        // } else {
-        //     return response()->json([
-        //         'status' => 'failed',
-        //         'message' => 'Something went wrong , while updating user',
-        //     ], 402);
-        // }
     }
 
 
@@ -312,7 +284,6 @@ class UserController extends Controller
         $request->validate([
             'email' => 'required|email',
             'password_check' => 'required',
-            ''
         ]);
 
 
