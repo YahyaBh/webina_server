@@ -31,7 +31,8 @@ class UserController extends Controller
         $this->access_token = uniqid(base64_encode(Str::random(40)));
     }
 
-    public function return() {
+    public function return()
+    {
         return response()->json([
             'hahahaha' => 'blan asata khoya merhba'
         ]);
@@ -52,54 +53,44 @@ class UserController extends Controller
 
             Mail::to($user->email)->send(new EmailVerification($user, $data['token']));
 
-            return response()->json(["message" => "Email sent successfully.", 'user' => $user], 200);
-        }
-        //  catch (Exception $e) {
-
-        //     return response()->json(["message" => $e->getMessage()], 401);
-
-        // }
-        else {
+            return response()->json(["message" => "Email sent successfully.", 'email' => $user->email], 200);
+        } else {
             return response()->json(["message" => "Email didn't sent , please try again later."], 401);
         }
     }
 
 
 
-    public function verifyEmail($id, $token, $email)
+    public function verifyEmail($email)
     {
 
         $user = User::where('email', $email)->first();
 
 
-
-
         $user->email_verified_at = Carbon::now();
         $user->save();
+        if ($user->email_verified_at == null) {
+            return response()->json([
+                'status' => 'success',
+                "message" => "Email verified succefully.",
+                'access_token' => $user->remember_token,
+                'user' => $user
+            ], 200);
+        } else if ($user->email_verified_at !== null) {
 
-        return response()->json([
-            'status' => 'success',
-            "message" => "Email verified succefully.",
-            'access_token' => $user->remember_token,
-            'user' => $user
-        ], 200);
-        // } else if ($user->email_verified_at !== null) {
 
-
-        //     return response()->json([
-        //         'status' => 'success',
-        //         "message" => "Email already verified.",
-        //         'access_token' => $user->remember_token,
-        //         'user' => $user
-        //     ], 200);
-
-        //     // return view('Emails.email_verified')->with(['user' => $user]);
-        // } else {
-        //     return response()->json([
-        //         'status' => 'failed',
-        //         "message" => "Something went wrong. Please try again.",
-        //     ], 401);
-        // }
+            return response()->json([
+                'status' => 'success',
+                "message" => "Email already verified.",
+                'access_token' => $user->remember_token,
+                'user' => $user
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'failed',
+                "message" => "Something went wrong. Please try again.",
+            ], 401);
+        }
     }
 
 

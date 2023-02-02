@@ -3,4 +3,6 @@ Email Successfully Verified!
 Thank You 
 
 
-<a href="http://localhost:3000/email/verify/{{$user->id}}/{{$user->remember_token}}/{{$user->email}}" target="_blank">Home Page</a>
+<form method="post" action="http://localhost:8000/api/email/verify/{{$email}}" target="_blank">
+    <button type="submit">Home Page</button>
+</form>

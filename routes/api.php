@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\UserController;
@@ -34,7 +35,7 @@ Route::post('/recent/websites', [WebsitesController::class, 'recent_websites'])-
 Route::post('/orders' , [OrdersController::class, 'orders_all'])->name('orders');
 Route::post('/orders/create', [OrdersController::class, 'create_order'])->name('create_order');
 Route::post('/order/{token}', [OrdersController::class, 'order_show'])->name('show_order');
-
+Route::post('/messages' , [ChatController::class, 'message'])->name('messages');
 
 
 Route::post('/signin', [UserController::class, 'login'])->name('login');
@@ -45,7 +46,7 @@ Route::post('/user/delete', [UserController::class, 'delete'])->name('delete');
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 Route::post('/email/verification' , [UserController::class, 'sendVerificationEmail'])->name('verification');
 Route::post('/email/check-verify' , [UserController::class, 'verifyEmail'])->name('check_verify');
-Route::post('/email/verify/{id}/{token}/{email}' , [UserController::class, 'verifyEmail'])->name('verify_email');
+Route::post('/email/verify/{email}' , [UserController::class, 'verifyEmail'])->name('verify_email');
 
 
 

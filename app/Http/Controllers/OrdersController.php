@@ -21,28 +21,30 @@ class OrdersController extends Controller
 
     public function orders_all(Request $request)
     {
+
         $request->validate([
-            'user_id' => 'required|integer',
-            'token' => 'required',
+            'user_id' => 'required',
         ]);
 
         $user = User::where('id', $request->user_id)->first();
 
-        if ($user && $user->remember_token === $request->token) {
-            $orders = Orders::where('user_id', $user->id)->get();
+        $orders = Orders::where('user_id', $user->id)->get();
 
-            $websites = Websites::where('token' , $orders->token)->get();
+
+        if ($orders) {
+            
+            // $websites = Websites::where('token', $orders->token)->get();
 
             return response()->json([
                 'status' => 'success',
                 'orders' => $orders,
-                'websites' => $websites
+                // 'websites' => $websites
             ], 200);
         } else {
             return response()->json([
-                'status' => 'failed',
-                'message' => 'Unauthorized user access'
-            ], 401);
+                'status' => 'empty',
+                'message' => 'No orders found'
+            ], 500);
         }
     }
 

@@ -77,4 +77,8 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         $this->attributes['password'] = bcrypt($password);
     }
 
+    public function messages()
+    {
+        return $this->hasMany(Messsage::class, 'sender_id');
+    }
 }

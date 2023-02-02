@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('orders', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('token')->onDelete('cascade');
-            $table->string('website_token');
+        Schema::create('messages', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('sender_id')->unsigned();
+            $table->text('rec_id');
+            $table->text('message');
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('orders');
+        Schema::dropIfExists('messages');
     }
 };

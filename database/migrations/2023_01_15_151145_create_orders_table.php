@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
-            $table->foreignId('website_id');
-            $table->string('toekn')->default('0000-0000-0000-0000-0000');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('token')->onDelete('cascade');
+            $table->string('website_token');
             $table->timestamps();
         });
     }
