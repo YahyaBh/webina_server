@@ -10,4 +10,11 @@ class Websites extends Model
     use HasFactory;
 
     protected $fillable  = ['website_name', 'token', 'category', 'price', 'Developing_Time'];
+
+
+
+    public function order()
+    {
+        return $this->belongsToMany(Order::class);
+    }
 }

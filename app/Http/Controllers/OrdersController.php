@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use App\Models\Orders;
 use App\Models\User;
 use App\Models\Websites;
@@ -26,26 +27,34 @@ class OrdersController extends Controller
             'user_id' => 'required',
         ]);
 
-        $user = User::where('id', $request->user_id)->first();
+        // $user = User::where('id', $request->user_id)->first();
 
-        $orders = Orders::where('user_id', $user->id)->get();
+        // $orders = Orders::where('user_id', $user->id)->get();
 
 
-        if ($orders) {
-            
-            // $websites = Websites::where('token', $orders->token)->get();
+        $orders = Order::find(1)->user();
 
-            return response()->json([
-                'status' => 'success',
-                'orders' => $orders,
-                // 'websites' => $websites
-            ], 200);
-        } else {
-            return response()->json([
-                'status' => 'empty',
-                'message' => 'No orders found'
-            ], 500);
-        }
+        return response()->json([
+            'status' => 'success',
+            'orders' => $orders,
+        ], 200);
+
+        // if ($orders) {
+
+        //     $websites = Websites::where('token', $request->get('website_id'))->first();
+
+        //     return response()->json([
+        //         'status' => 'success',
+        //         'orders' => $orders,
+        //     ], 200);
+        // }
+
+        // else {
+        //     return response()->json([
+        //         'status' => 'empty',
+        //         'message' => 'No orders found'
+        //     ], 500);
+        // }
     }
 
     public function create_order(Request $request)
@@ -60,7 +69,7 @@ class OrdersController extends Controller
             $postOrder = $request->all();
             $postOrder['token'] = $this->order_token;
 
-            Orders::create($postOrder);
+            Order::create($postOrder);
 
             return response()->json([
                 'status' => 'success',
@@ -84,7 +93,7 @@ class OrdersController extends Controller
 
 
         try {
-            $order = Orders::where('token', $request->order_token)->where('user_id', $request->user_id)->first();
+            $order = Order::where('token', $request->order_token)->where('user_id', $request->user_id)->first();
 
             return response()->json([
                 'status' => 'success',
