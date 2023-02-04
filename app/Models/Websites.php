@@ -15,6 +15,6 @@ class Websites extends Model
 
     public function order()
     {
-        return $this->belongsToMany(Order::class);
+        return $this->belongsToMany(Orders::class);
     }
 }
