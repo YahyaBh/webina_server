@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\SubscribeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebsitesController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -36,7 +37,7 @@ Route::post('/orders' , [OrdersController::class, 'orders_all'])->name('orders')
 Route::post('/orders/create', [OrdersController::class, 'create_order'])->name('create_order');
 Route::post('/order/{token}', [OrdersController::class, 'order_show'])->name('show_order');
 Route::post('/messages' , [ChatController::class, 'message'])->name('messages');
-
+Route::post('/subscribe', [SubscribeController::class, 'subscribe'])->name('subscribe');
 
 Route::post('/signin', [UserController::class, 'login'])->name('login');
 Route::post('/signup', [UserController::class, 'register'])->name('register');

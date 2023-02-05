@@ -13,12 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('order_websites', function (Blueprint $table) {
+        Schema::create('subscribes', function (Blueprint $table) {
             $table->id();
-            $table->integer('order_id')->unsigned();
-            $table->foreign('order_id')->references('id')->on('orders')->onUpdate('cascade')->onDelete('set null');
-            $table->integer('website_id')->unsigned();
-            $table->foreign('website_id')->references('id')->on('websites')->onUpdate('cascade')->onDelete('set null');
+            $table->integer('email')->unique();
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('order_websites');
+        Schema::dropIfExists('subscribes');
     }
 };
