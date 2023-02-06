@@ -51,7 +51,7 @@ Route::post('/email/verify/{email}' , [UserController::class, 'verifyEmail'])->n
 
 
 
-Route::get('/auth/google', [AuthController::class, 'redirectToAuth']);
+Route::get('/auth', [AuthController::class, 'redirectToAuth']);
 Route::get('/auth/callback', [AuthController::class, 'handleAuthCallBack']);
 
 

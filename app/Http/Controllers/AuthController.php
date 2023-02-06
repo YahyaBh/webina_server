@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\JsonResponse;
-use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -16,56 +16,51 @@ class AuthController extends Controller
 
     private $access_token;
 
+    public function __construct()
+    {
+        $this->access_token = uniqid(base64_encode(Str::random(40)));
+    }
+
     public function redirectToAuth(): JsonResponse
     {
         return response()->json([
             'url' => Socialite::driver('google')
+                ->stateless()
                 ->redirect()
                 ->getTargetUrl(),
+                'status' => 'success',
         ]);
     }
 
 
-    public function handleAuthCallBack()
+    public function handleAuthCallback(): JsonResponse
     {
         try {
-            $user = Socialite::driver('google')->user();
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Something went wrong while creating user, please try again' . $e->getMessage(),
-            ], 200);
+            /** @var SocialiteUser $socialiteUser */
+            $socialiteUser = Socialite::driver('google')->stateless()->user();
+        } catch (ClientException $e) {
+            return response()->json(['error' => 'Invalid credentials provided.'], 422);
         }
-        if (explode("@", $user->email)[1] !== 'company.com') {
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Something went wrong , please try again',
-            ], 200);
-        }
-        $existingUser = User::where('email', $user->email)->first();
-        if ($existingUser) {
-            return response()->json([
-                'status' => 'success',
-                'message' => 'User created successfully',
-                'token'  => $this->access_token,
-                'user' => $existingUser
-            ], 200);
-        } else {
-            $newUser                  = new User;
-            $newUser->name            = $user->name;
-            $newUser->email           = $user->email;
-            $newUser->google_id       = $user->id;
-            $newUser->avatar          = $user->avatar;
-            $newUser->avatar_original = $user->avatar_original;
-            $newUser->remember_token = $this->access_token;
-            User::create($newUser);
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'User created successfully',
-                'token'  => $this->access_token,
-                'user' => $newUser
-            ], 200);
-        }
+        /** @var User $user */
+        $user = User::query()
+            ->firstOrCreate(
+                [
+                    'email' => $socialiteUser->getEmail(),
+                ],
+                [
+                    'email_verified_at' => now(),
+                    'name' => $socialiteUser->getName(),
+                    'google_id' => $socialiteUser->getId(),
+                    'avatar' => $socialiteUser->getAvatar(),
+                    'remember_token' => $this->access_token
+                ]
+            );
+
+        return response()->json([
+            'user' => $user,
+            'access_token' => $this->access_token,
+            'token_type' => 'Bearer',
+        ]);
     }
 }

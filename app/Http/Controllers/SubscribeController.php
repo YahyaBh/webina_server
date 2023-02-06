@@ -31,7 +31,9 @@ class SubscribeController extends Controller
 
 
         try {
-            Subscribe::create([$request]);
+            Subscribe::create([
+                'email' => $request->email
+            ]);
 
             return response()->json([
                 'status' => 'success',
@@ -40,7 +42,7 @@ class SubscribeController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'failed',
-                'message' => 'Sorry, something went wrong'
+                'message' => 'Sorry, something went wrong' , $e
             ], 500);
         }
     }
