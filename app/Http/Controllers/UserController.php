@@ -230,38 +230,40 @@ class UserController extends Controller
 
     public function update(Request $request)
     {
-        $user = User::where('email', $request->email)->first();
 
-
-
-        $user->name = $request->input('name');
-        $user->email = $request->input('email');
-
-        if (Hash::check($request->password, $user->password)) {
-            $user->password = $request->input(Hash::make('new_password'));
-        }
+        $user = User::where('email', 'bohsineyahya@gmail.com')->first();
 
         if ($request->hasFile('image')) {
             $fileName = time() . '.' . $request->file->extension();
             $request->file->move(public_path('uploads'), $fileName);
+            $user->update([
+                'avatar' => $request->hasFile('image'),
+            ]);
+
+
+
+            if ($request->name || $request->email || $request->password) {
+                $user->name = $request->input('name');
+                $user->email = $request->input('email');
+                if (Hash::check($request->password, $user->password)) {
+                    $user->password = $request->input(Hash::make('new_password'));
+                }
+                $user->remember_token = $request->input('remember_token');
+                $user->update([
+                    'name' => $request->input('name'),
+                    'email' => $request->input('email'),
+                    'password' => Hash::make($request->input('new_password')),
+                ]);
+            }
         }
 
 
-        $user->remember_token = $request->input('remember_token');
-        $user->update([
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'password' => Hash::make($request->input('new_password')),
-            'image' => $request->hasFile('image') ? $fileName : null,
-        ]);
+
 
         return response()->json([
             'status' => 'success',
             'message' => 'User updated successfully',
             'user' => $user,
-            'token' => $user->remember_token,
-            'password' => $user->password,
-            'hashed_password' => $request->input(Hash::make('password'))
         ], 200);
     }
 
