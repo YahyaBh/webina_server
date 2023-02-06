@@ -25,10 +25,11 @@ class AuthController extends Controller
     {
         return response()->json([
             'url' => Socialite::driver('google')
+                ->with(["prompt" => "select_account"])
                 ->stateless()
                 ->redirect()
                 ->getTargetUrl(),
-                'status' => 'success',
+            'status' => 'success',
         ]);
     }
 

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\MainController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\SubscribeController;
 use App\Http\Controllers\UserController;
@@ -28,7 +29,9 @@ Auth::routes([
     'verify' => true
 ]);
 
-Route::get('/websites', [WebsitesController::class, 'index'])->name('home');
+Route::get('/' , [MainController::class , 'getTestimonialsFounders'])->name('home');
+Route::get('/blogs' , [MainController::class , 'getBlogs'])->name('blogs');
+Route::get('/websites', [WebsitesController::class, 'index'])->name('websites_home');
 Route::post('/websites/create', [WebsitesController::class, 'store'])->name('create');
 Route::get('/website/{token}', [WebsitesController::class, 'show'])->name('delete');
 Route::delete('/website/delete/{token}', [WebsitesController::class, 'delete'])->name('delete');

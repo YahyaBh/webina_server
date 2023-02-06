@@ -236,11 +236,24 @@ class UserController extends Controller
 
         $user->name = $request->input('name');
         $user->email = $request->input('email');
+
         if (Hash::check($request->password, $user->password)) {
             $user->password = $request->input(Hash::make('new_password'));
         }
+
+        if ($request->hasFile('image')) {
+            $fileName = time() . '.' . $request->file->extension();
+            $request->file->move(public_path('uploads'), $fileName);
+        }
+
+
         $user->remember_token = $request->input('remember_token');
-        $user->update();
+        $user->update([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'password' => Hash::make($request->input('new_password')),
+            'image' => $request->hasFile('image') ? $fileName : null,
+        ]);
 
         return response()->json([
             'status' => 'success',
