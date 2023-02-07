@@ -27,7 +27,7 @@ class EmailVerification extends Mailable
     {
         $this->user = $user;
 
-        $this->url = 'http://localhost:8000/api/email/verify/'.$user->email;
+        $this->url = 'http://localhost:3000/email/verify/'.$user->email . '/' . $token;
 
     }
 

@@ -1,8 +1,8 @@
 Hello {{ $name }}
 
+<br />
 
 
 Verify Your Email Address
-<form method="post" action={{ $url }}>
-    <button type="submit" href=>Verify Email</button>
-</form>
+
+<a href={{ $url }}>Verify Email</a>

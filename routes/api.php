@@ -14,9 +14,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 
-Auth::routes([
-    'verify' => true
-]);
+// Auth::routes([
+//     'verify' => true
+// ]);
 
 Route::get('/' , [MainController::class , 'getTestimonialsFounders'])->name('home');
 Route::get('/blogs' , [MainController::class , 'getBlogs'])->name('blogs');
@@ -37,9 +37,16 @@ Route::post('/user' , [UserController::class, 'profile'])->name('profile');
 Route::post('/user/update' , [UserController::class, 'update'])->name('update');
 Route::post('/user/delete', [UserController::class, 'delete'])->name('delete');
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+
+
+
+
 Route::post('/email/verification' , [UserController::class, 'sendVerificationEmail'])->name('verification');
 Route::post('/email/check-verify' , [UserController::class, 'verifyEmail'])->name('check_verify');
-Route::post('/email/verify/{email}' , [UserController::class, 'verifyEmail'])->name('verify_email');
+Route::get('/email/check-verify/{email}/{token}' , [UserController::class, 'verifyEmailget'])->name('check_verify_get');
+Route::get('/email/verify/{email}/{token}' , [UserController::class, 'verifyEmail'])->name('verify_email');
+Route::post('/email/verify' , [UserController::class, 'verifyEmailSign'])->name('verify_email');
+
 
 
 
