@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\OrdersController;
@@ -19,15 +20,24 @@ use Illuminate\Support\Facades\Route;
 // ]);
 
 Route::get('/' , [MainController::class , 'getTestimonialsFounders'])->name('home');
+
 Route::get('/blogs' , [MainController::class , 'getBlogs'])->name('blogs');
+
 Route::get('/websites', [WebsitesController::class, 'index'])->name('websites_home');
 Route::post('/websites/create', [WebsitesController::class, 'store'])->name('create');
 Route::get('/website/{token}', [WebsitesController::class, 'show'])->name('delete');
 Route::delete('/website/delete/{token}', [WebsitesController::class, 'delete'])->name('delete');
 Route::post('/recent/websites', [WebsitesController::class, 'recent_websites'])->name('recent');
+
+
+
 Route::post('/orders' , [OrdersController::class, 'orders_all'])->name('orders');
 Route::post('/orders/create', [OrdersController::class, 'create_order'])->name('create_order');
 Route::post('/order/{token}', [OrdersController::class, 'order_show'])->name('show_order');
+
+
+Route::post('/checkout', [CheckoutController::class, 'paymecntCheck'])->name('checkout');
+
 Route::post('/messages' , [ChatController::class, 'message'])->name('messages');
 Route::post('/subscribe', [SubscribeController::class, 'subscribe'])->name('subscribe');
 

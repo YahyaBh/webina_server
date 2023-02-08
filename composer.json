@@ -11,6 +11,7 @@
         "laravel/tinker": "^2.7",
         "laravel/ui": "^4.2",
         "pusher/pusher-php-server": "^7.2",
+        "stripe/stripe-php": "^10.5",
         "tymon/jwt-auth": "*",
         "youcanpay/payment-sdk": "^0.1.22"
     },
