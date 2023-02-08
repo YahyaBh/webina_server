@@ -42,7 +42,6 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 
 Route::post('/email/verification' , [UserController::class, 'sendVerificationEmail'])->name('verification');
-Route::post('/email/check-verify' , [UserController::class, 'verifyEmail'])->name('check_verify');
 Route::get('/email/check-verify/{email}/{token}' , [UserController::class, 'verifyEmailget'])->name('check_verify_get');
 Route::get('/email/verify/{email}/{token}' , [UserController::class, 'verifyEmail'])->name('verify_email');
 Route::post('/email/verify' , [UserController::class, 'verifyEmailSign'])->name('verify_email');
