@@ -185,7 +185,7 @@ class UserController extends Controller
         if ($user !== null) {
             return response()->json([
                 'status' => 'success',
-                'access_token' => $this->access_token,
+                'access_token' => $user->remember_token,
                 'user' => $user,
             ], 200);
         } else {
@@ -198,9 +198,6 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
-
-
-
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|min:8',
@@ -211,13 +208,19 @@ class UserController extends Controller
 
         if ($user) {
             if (Hash::check($request->password, $user->password)) {
-
-                return response()->json([
-                    'status' => 'success',
-                    'message' => $user->name . ' Signed In successfully',
-                    'access_token' => $this->access_token,
-                    'user' => $user,
-                ], 200);
+                if ($user->email_verified_at) {
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => $user->name . ' Signed In successfully',
+                        'access_token' => $user->remember_token,
+                        'user' => $user,
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'status' => 'failed',
+                        'message' => 'Email is not verified',
+                    ], 400);
+                }
             } else if (!Hash::check($request->password, $user->password)) {
                 return response()->json([
                     'status' => 'failed',
@@ -236,6 +239,8 @@ class UserController extends Controller
             ], 401);
         }
     }
+
+
 
 
 
@@ -259,21 +264,30 @@ class UserController extends Controller
             $postArray['full_name'] = $request->first_name . ' ' . $request->last_name;
             $postArray['remember_token'] = $this->access_token;
 
-            $user = User::create($postArray);
+            $userFNfound = User::where('full_name', $postArray['full_name'])->first();
 
-            return response()->json([
-                'status' => 'success',
-                'message' => $request->name . ' Registred successfully',
-                'access_token' => $this->access_token,
-                'user' => $postArray,
-            ]);
+            if (!$userFNfound) {
+                User::create($postArray);
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => $request->name . 'Registred successfully',
+                    'access_token' =>  $postArray['remember_token'],
+                    'user' => $postArray,
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'First Name Or Last Name already exists',
+                ], 401);
+            }
         } else if ($emailFound) {
             return response()->json([
                 'message' => 'Email already exists'
             ], 400);
         } else {
             return response()->json([
-                'message' => 'Something went wrong'
+                'message' => 'Something went wrong , please try again'
             ], 403);
         }
     }

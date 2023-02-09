@@ -17,34 +17,73 @@ class CheckoutController extends Controller
 {
     public function paymecntCheck(Request $request)
     {
-        try {
-            $stripe = new \Stripe\StripeClient(
-                env('STRIPE_SECRET_KEY')
-            );
 
-            $res = $stripe->tokens->create([
-                'card' => [
-                    'number' => $request->card_number,
-                    'exp_month' => $request->exp_month,
-                    'exp_year' => $request->exp_year,
-                    'cvc' => $request->cvc,
-                ],
-            ]);
+        $user = User::where('email', $request->user_email)->first();
 
-            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
+        if ($user) {
+            try {
+                $stripe = new \Stripe\StripeClient(
+                    env('STRIPE_SECRET_KEY')
+                );
 
-            $response = $stripe->charges->create([
-                'amount' => $request->price,
-                'currency' => 'USD',
-                'description' => $request->description,
-                'source' => 'tok_visa',
-            ]);
+                $res = $stripe->tokens->create([
+                    'card' => [
+                        'number' => '4242424242424242',
+                        'exp_month' => 2,
+                        'exp_year' => 2024,
+                        'cvc' => '314',
+                    ],
+                ]);
 
+                \Stripe\Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
 
-            return response()->json([$response], 200);
-        } catch (Exception $e) {
+                $response = $stripe->charges->create([
+                    'amount' => $request->price * 100,
+                    'currency' => 'USD',
+                    'description' => $request->description,
+                    'source' => $res->id,
+                    'receipt_email' => $request->user_email,
+                    // 'source' => [
+                    //     'name' => $request->name,
+                    //     'customer' => $request->token
+                    // ],
+                    // 'shipping' => [
+                    //     'name' => $request->name,
+                    // ]
+                ]);
+                
+
+                Orders::create([
+                    'user_id' => $request->user_id,
+                    'user_token' => $request->user_token,
+                    'order_number' => $response->id,
+                    'user_token' => $request->user_token,
+                    'status' => 'completed',
+                    'grand_total' => $request->price,
+                    'item_count' => 1,
+                    'is_paid' => true,
+                    'payment_method' => 'credit_card',
+                    'notes' => $request->description,
+                ]);
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Payment successfully created , Thank you!',
+                    'response' => $response,
+                    'url' => 'http://localhost:3000/payment/success'
+                ], 200);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage(),
+                    'cancel_url' => 'http://localhost:3000/payment/failed',
+                ], 400);
+            }
+        } else {
             return response()->json([
-                'message' => $e->getMessage(),
+                'status' => 'error',
+                'message' => 'User not found , please try again',
+                'cancel_url' => 'http://localhost:3000/payment/failed',
             ], 400);
         }
     }
