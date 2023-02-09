@@ -19,7 +19,8 @@ class OrdersController extends Controller
             'user_token' => 'required',
         ]);
 
-        $user = User::where('remember_token', 'NGRPbnVyU1AzNDJ2TGVCQzlJQ0VIZEhsU1liOTFBNWxXcWhjQlhyVQ==63e534dc5194e')->first();
+
+        $user = User::where('remember_token', $request->user_token)->first();
 
         $orders = Orders::where('user_id', $user->id)->get();
 
@@ -48,24 +49,34 @@ class OrdersController extends Controller
     public function order_show(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|integer',
-            'token' => 'required',
-            'order_token' => 'required'
+            'user_token' => 'required',
+            'order_token' => 'required',
+            'user_id' => 'required',
         ]);
 
+        $user = User::where('remember_token', $request->user_token)->first();
+        
+        if ($user) {
+            try {
+                $order = Orders::where('order_number', $request->order_token)->first();
+                
+                return response()->json([
+                    'status' => 'success',
+                    'order' => $order,
+                ], 200);
 
-        try {
-            $order = Orders::where('token', $request->order_token)->where('user_id', $request->user_id)->first();
 
-            return response()->json([
-                'status' => 'success',
-                'order' => $order,
-            ]);
-        } catch (\Exception $e) {
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => $e->getMessage(),
+                ], 405);
+            }
+        } else {
             return response()->json([
                 'status' => 'failed',
-                'message' => 'Order not found'
-            ]);
+                'message' => 'Something went wrong'
+            ], 401);
         }
     }
 }

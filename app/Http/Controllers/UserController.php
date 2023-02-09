@@ -204,8 +204,6 @@ class UserController extends Controller
         ]);
 
         $user = User::where('email', $request->email)->first();
-
-
         if ($user) {
             if (Hash::check($request->password, $user->password)) {
                 if ($user->email_verified_at) {
@@ -272,7 +270,7 @@ class UserController extends Controller
                 return response()->json([
                     'status' => 'success',
                     'message' => $request->name . 'Registred successfully',
-                    'access_token' =>  $postArray['remember_token'],
+                    'access_token' =>  $this->access_token,
                     'user' => $postArray,
                 ]);
             } else {

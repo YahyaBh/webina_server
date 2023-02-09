@@ -33,7 +33,8 @@ Route::post('/recent/websites', [WebsitesController::class, 'recent_websites'])-
 
 Route::post('/orders' , [OrdersController::class, 'orders_all'])->name('orders');
 Route::post('/orders/create', [OrdersController::class, 'create_order'])->name('create_order');
-Route::post('/order/{token}', [OrdersController::class, 'order_show'])->name('show_order');
+Route::post('/order', [OrdersController::class, 'order_show'])->name('show_order');
+
 
 
 Route::post('/checkout', [CheckoutController::class, 'paymecntCheck'])->name('checkout');
