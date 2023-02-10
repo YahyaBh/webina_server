@@ -58,29 +58,38 @@ class UserController extends Controller
     {
 
         $user = User::where('email', $email)->first();
-
-        if ($user) {
-
-            $user->email_verified_at = Carbon::now();
-            $user->save();
+        $timeNow = Carbon::now();
 
 
-            if ($user->email_verified_at == null) {
-                return response()->json([
-                    'status' => 'success',
-                    "message" => "Email verified succefully.",
-                    'access_token' => $user->remember_token,
-                    'user' => $user,
-                    'email' => $user->email
-                ], 200);
-            } else if ($user->email_verified_at !== null) {
-                return response()->json([
-                    'status' => 'success',
-                    "message" => "Email already verified.",
-                    'access_token' => $user->remember_token,
-                    'user' => $user,
-                    'email' => $user->email
-                ], 200);
+        if ($user && $user->created_at < $timeNow) {
+            if ($user) {
+
+                $user->email_verified_at = Carbon::now();
+                $user->save();
+
+
+                if ($user->email_verified_at == null) {
+                    return response()->json([
+                        'status' => 'success',
+                        "message" => "Email verified succefully.",
+                        'access_token' => $user->remember_token,
+                        'user' => $user,
+                        'email' => $user->email
+                    ], 200);
+                } else if ($user->email_verified_at !== null) {
+                    return response()->json([
+                        'status' => 'success',
+                        "message" => "Email already verified.",
+                        'access_token' => $user->remember_token,
+                        'user' => $user,
+                        'email' => $user->email
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'status' => 'failed',
+                        "message" => "Something went wrong. Please try again.",
+                    ], 401);
+                }
             } else {
                 return response()->json([
                     'status' => 'failed',
@@ -88,9 +97,11 @@ class UserController extends Controller
                 ], 401);
             }
         } else {
+            User::where('email', $email)->delete();
+
             return response()->json([
                 'status' => 'failed',
-                "message" => "Something went wrong. Please try again.",
+                "message" => "The email link expired please try to register again.",
             ], 401);
         }
     }
@@ -160,9 +171,7 @@ class UserController extends Controller
                 'access_token' => $user->remember_token,
                 'user' => $user
             ], 200);
-        } else if ($user->email_verified_at !== null || $user->remember_token !== $token) {
-
-
+        } else if ($user->email_verified_at === null || $user->remember_token !== $token) {
             return response()->json([
                 'status' => 'failed',
                 "message" => "Email is not verified verified.",

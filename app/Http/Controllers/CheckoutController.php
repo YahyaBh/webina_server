@@ -43,13 +43,7 @@ class CheckoutController extends Controller
                     'description' => $request->description,
                     'source' => $res->id,
                     'receipt_email' => $request->user_email,
-                    // 'source' => [
-                    //     'name' => $request->name,
-                    //     'customer' => $request->token
-                    // ],
-                    // 'shipping' => [
-                    //     'name' => $request->name,
-                    // ]
+                    'name' => $request->full_name,
                 ]);
                 
 

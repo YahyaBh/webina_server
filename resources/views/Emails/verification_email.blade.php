@@ -117,17 +117,17 @@
                                             <tr>
                                                 <td class="column column-1"
                                                     style="
-                                  mso-table-lspace: 0pt;
-                                  mso-table-rspace: 0pt;
-                                  font-weight: 400;
-                                  text-align: left;
-                                  vertical-align: top;
-                                  padding-top: 5px;
-                                  padding-bottom: 5px;
-                                  border-top: 0px;
-                                  border-right: 0px;
-                                  border-bottom: 0px;
-                                  border-left: 0px;
+                                    mso-table-lspace: 0pt;
+                                    mso-table-rspace: 0pt;
+                                    font-weight: 400;
+                                    text-align: left;
+                                    vertical-align: top;
+                                    padding-top: 5px;
+                                    padding-bottom: 5px;
+                                    border-top: 0px;
+                                    border-right: 0px;
+                                    border-bottom: 0px;
+                                    border-left: 0px;
                                 "
                                                     width="100%">
                                                     <table border="0" cellpadding="0" cellspacing="0"
@@ -146,7 +146,7 @@
                                       ">
                                                                 <div align="center" class="alignment"
                                                                     style="line-height: 10px">
-                                                                    <img src="https://localhost:3000/Images/WEBINA2.png"
+                                                                    <img src="https://fv2-5.failiem.lv/thumb_show.php?i=9uk3a22bp&view"
                                                                         style="
                                             display: block;
                                             height: auto;
@@ -183,7 +183,8 @@
                                             margin-top: 0;
                                             margin-bottom: 0;
                                         ">
-                                                                    <span class="tinyMce-placeholder">Hello {{ $name }} !
+                                                                    <span class="tinyMce-placeholder">Hello
+                                                                        {{ $name }} !
                                                                         <br />Verify your email
                                                                         address to complete registration</span>
                                                                 </h1>
