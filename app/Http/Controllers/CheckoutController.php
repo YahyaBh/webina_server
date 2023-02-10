@@ -28,10 +28,10 @@ class CheckoutController extends Controller
 
                 $res = $stripe->tokens->create([
                     'card' => [
-                        'number' => '4242424242424242',
-                        'exp_month' => 2,
-                        'exp_year' => 2024,
-                        'cvc' => '314',
+                        'number' => $request->number,
+                        'exp_month' => $request->exp_month,
+                        'exp_year' => 20 . $request->exp_year,
+                        'cvc' => $request->cvc,
                     ],
                 ]);
 
@@ -43,16 +43,15 @@ class CheckoutController extends Controller
                     'description' => $request->description,
                     'source' => $res->id,
                     'receipt_email' => $request->user_email,
-                    'name' => $request->full_name,
                 ]);
-                
+
 
                 Orders::create([
                     'user_id' => $request->user_id,
                     'user_token' => $request->user_token,
                     'order_number' => $response->id,
                     'user_token' => $request->user_token,
-                    'status' => 'completed',
+                    'status' => 'pending',
                     'grand_total' => $request->price,
                     'item_count' => 1,
                     'is_paid' => true,
