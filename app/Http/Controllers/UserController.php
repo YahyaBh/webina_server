@@ -305,28 +305,21 @@ class UserController extends Controller
 
         $user = User::where('email', 'bohsineyahya@gmail.com')->first();
 
-        if ($request->hasFile('image')) {
-            $fileName = time() . '.' . $request->file->extension();
-            $request->file->move(public_path('uploads'), $fileName);
-            $user->update([
-                'avatar' => $request->hasFile('image'),
-            ]);
 
 
 
-            if ($request->name || $request->email || $request->password) {
-                $user->name = $request->input('name');
-                $user->email = $request->input('email');
-                if (Hash::check($request->password, $user->password)) {
-                    $user->password = $request->input(Hash::make('new_password'));
-                }
-                $user->remember_token = $request->input('remember_token');
-                $user->update([
-                    'name' => $request->input('name'),
-                    'email' => $request->input('email'),
-                    'password' => Hash::make($request->input('new_password')),
-                ]);
+        if ($request->name || $request->email || $request->password) {
+            $user->name = $request->input('name');
+            $user->email = $request->input('email');
+            if (Hash::check($request->password, $user->password)) {
+                $user->password = $request->input(Hash::make('new_password'));
             }
+            $user->remember_token = $request->input('remember_token');
+            $user->update([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'password' => Hash::make($request->input('new_password')),
+            ]);
         }
 
 
@@ -338,6 +331,41 @@ class UserController extends Controller
             'user' => $user,
         ], 200);
     }
+
+    public function updateAvatar(Request $request)
+    {
+
+        $request->validate([
+            'avatar' => 'required|max:2048',
+            'user_id' => 'required|numeric|exists:users,id',
+        ]);
+
+
+        $user = User::findOrFail($request->user_id);
+
+        if ($user && $user->remember_token === $request->user_token) {
+            if ($request->has('avatar')) {
+
+                $image = $request->file('avatar');
+
+                dd($image);
+                $filename = time() . '.' . $image->getClientOriginalExtention();
+                $image->move('uploads/users/', $filename);
+                
+                //save the image
+                $user->update([
+                    'avatar' => $filename
+                ]);
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Image updated successfully',
+                    'avatar' => $user->avatar,
+                ], 200);
+            }
+        }
+    }
+
 
 
     public function logout()

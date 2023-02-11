@@ -22,25 +22,35 @@ class OrdersController extends Controller
 
         $user = User::where('remember_token', $request->user_token)->first();
 
-        $orders = Orders::where('user_id', $user->id)->get();
+        if ($user) {
 
-        return response()->json([
-            'status' => 'success',
-            'orders' => $orders,
-        ], 200);
 
-        if ($orders) {
-
-            $websites = Websites::where('token', $request->get('website_id'))->first();
+            $orders = Orders::where('user_id', $user->id)->get();
 
             return response()->json([
                 'status' => 'success',
                 'orders' => $orders,
             ], 200);
+
+            if ($orders) {
+
+                $websites = Websites::where('token', $request->get('website_id'))->first();
+
+                return response()->json([
+                    'status' => 'success',
+                    'orders' => $orders,
+                    'websites' => $websites,
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => 'empty',
+                    'message' => 'No orders found'
+                ], 500);
+            }
         } else {
             return response()->json([
-                'status' => 'empty',
-                'message' => 'No orders found'
+                'status' => 'failed',
+                'message' => 'User not found'
             ], 500);
         }
     }
@@ -55,17 +65,15 @@ class OrdersController extends Controller
         ]);
 
         $user = User::where('remember_token', $request->user_token)->first();
-        
+
         if ($user) {
             try {
                 $order = Orders::where('order_number', $request->order_token)->first();
-                
+
                 return response()->json([
                     'status' => 'success',
                     'order' => $order,
                 ], 200);
-
-
             } catch (\Exception $e) {
                 return response()->json([
                     'status' => 'failed',

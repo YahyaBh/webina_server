@@ -46,6 +46,7 @@ Route::post('/signin', [UserController::class, 'login'])->name('login');
 Route::post('/signup', [UserController::class, 'register'])->name('register');
 Route::post('/user' , [UserController::class, 'profile'])->name('profile');
 Route::post('/user/update' , [UserController::class, 'update'])->name('update');
+Route::post('/user/update/avatar' , [UserController::class, 'updateAvatar'])->name('updateAvatar');
 Route::post('/user/delete', [UserController::class, 'delete'])->name('delete');
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
