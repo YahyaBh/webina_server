@@ -70,9 +70,13 @@ class OrdersController extends Controller
             try {
                 $order = Orders::where('order_number', $request->order_token)->first();
 
+                $website = Websites::where('token', $order->website_token)->first();
+
+
                 return response()->json([
                     'status' => 'success',
                     'order' => $order,
+                    'website' => $website,
                 ], 200);
             } catch (\Exception $e) {
                 return response()->json([

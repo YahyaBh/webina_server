@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('order_number');
             $table->unsignedBigInteger('user_id');
+            $table->string('website_token');
             $table->string('user_token');
             $table->enum('status', ['pending', 'processing', 'completed', 'decline'])->default('pending');
             $table->float('grand_total');
@@ -25,7 +26,7 @@ return new class extends Migration
             $table->enum('payment_method', ['cash_on_delivery' , 'paypal' , 'credit_card'])->default('credit_card');
             $table->string('notes')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('website_token')->references('token')->on('websites')->onDelete('cascade');
+            $table->foreign('website_token')->references('token')->on('websites');
             $table->timestamps();
         });
     }

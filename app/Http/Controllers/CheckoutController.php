@@ -57,6 +57,7 @@ class CheckoutController extends Controller
                     'is_paid' => true,
                     'payment_method' => 'credit_card',
                     'notes' => $request->description,
+                    'website_token' => $request->website_token,
                 ]);
 
                 return response()->json([

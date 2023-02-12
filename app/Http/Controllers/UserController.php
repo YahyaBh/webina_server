@@ -345,11 +345,8 @@ class UserController extends Controller
 
         if ($user && $user->remember_token === $request->user_token) {
             if ($request->has('avatar')) {
-
                 $image = $request->file('avatar');
-
-                dd($image);
-                $filename = time() . '.' . $image->getClientOriginalExtention();
+                $filename = time() . '.' . $image->getClientOriginalExtension();
                 $image->move('uploads/users/', $filename);
                 
                 //save the image
@@ -360,7 +357,6 @@ class UserController extends Controller
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Image updated successfully',
-                    'avatar' => $user->avatar,
                 ], 200);
             }
         }
