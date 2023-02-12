@@ -322,9 +322,6 @@ class UserController extends Controller
             ]);
         }
 
-
-
-
         return response()->json([
             'status' => 'success',
             'message' => 'User updated successfully',
@@ -357,6 +354,7 @@ class UserController extends Controller
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Image updated successfully',
+                    'user' => $user,
                 ], 200);
             }
         }
