@@ -270,6 +270,8 @@
                                                                                 style="
                                                 word-break: break-word;
                                                 line-height: 28px;
+                                                text-decoration: none;
+                                                color : #000;
                                               ">Verify
                                                                                 Email</a></span>
                                                                     </div>

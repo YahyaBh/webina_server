@@ -39,7 +39,6 @@ Route::post('/order', [OrdersController::class, 'order_show'])->name('show_order
 
 Route::post('/checkout', [CheckoutController::class, 'paymecntCheck'])->name('checkout');
 
-Route::post('/messages' , [ChatController::class, 'message'])->name('messages');
 Route::post('/subscribe', [SubscribeController::class, 'subscribe'])->name('subscribe');
 
 Route::post('/signin', [UserController::class, 'login'])->name('login');
@@ -50,6 +49,9 @@ Route::post('/user/update/avatar' , [UserController::class, 'updateAvatar'])->na
 Route::post('/user/delete', [UserController::class, 'delete'])->name('delete');
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
+
+Route::post('/chat/message' , [ChatController::class, 'sendMessage'])->name('sendMessage');
+Route::post('/chat/messages' , [ChatController::class, 'messages'])->name('messages');
 
 
 
