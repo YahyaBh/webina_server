@@ -6,7 +6,6 @@ use App\Events\MessageEvent;
 use App\Models\User;
 use App\Models\Message;
 use Illuminate\Http\Request;
-use Pusher\Pusher;
 
 class ChatController extends Controller
 {
@@ -14,23 +13,56 @@ class ChatController extends Controller
     {
         $request->validate([
             'message' => 'required',
+            'user_id' => 'required',
+            'user_token' => 'required',
+            'reciever_id' => 'required',
         ]);
 
 
+        $user = User::where('id', $request->user_id)->first();
 
-        $message = $request->input('message');
+        if ($user && $user->remember_token === $request->user_token) {
 
-        event(new MessageEvent($message));
+            $message = $request->input('message');
 
-        return response()->json(['message' => $message], 200);
+
+            Message::create([
+                'message' => $message,
+                'sender_id' => $request->user_id,
+                'receiver_id' => $request->reciever_id,
+            ]);
+
+            $messages = Message::all();
+
+            event(new MessageEvent($messages));
+
+
+
+            return response()->json(['message' => $message], 200);
+        } else {
+            return response()->json(['message' => 'Unauthorized User'], 401);
+        }
     }
 
 
 
     public function messages(Request $request)
     {
-        $messages = Message::all();
+        $request->validate([
+            'user_id' => 'required',
+            'user_token' => 'required',
+            'reciever_id' => 'required',
+        ]);
 
-        return response()->json(['messages' => $messages], 200);
+        $user = User::where('id', $request->user_id)->first();
+
+        if ($user && $user->remember_token == $request->user_token) {
+
+            $messages = Message::where('receiver_id', $request->reciever_id)->orWhere('sender_id', $request->se)->get();;
+
+            return response()->json(['messages' => $messages], 200);
+        } else {
+            return response()->json(['message' => 'Unauthorized User'], 401);
+        }
     }
 }

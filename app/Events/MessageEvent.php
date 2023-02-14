@@ -14,12 +14,6 @@ class MessageEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * Create a new event instance.
-     *
-     * @return void
-     */
-
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $message;
@@ -36,6 +30,6 @@ class MessageEvent implements ShouldBroadcast
 
     public function broadcastAs()
     {
-        return 'user-message-sc';
+        return 'user-message';
     }
 }

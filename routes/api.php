@@ -15,9 +15,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 
-// Auth::routes([
-//     'verify' => true
-// ]);
+Auth::routes([
+    'verify' => true
+]);
 
 Route::get('/' , [MainController::class , 'getTestimonialsFounders'])->name('home');
 
