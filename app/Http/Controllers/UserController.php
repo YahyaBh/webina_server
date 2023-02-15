@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\NotificationPusher as EventsNotificationPusher;
 use App\Mail\EmailVerification;
+use App\Models\Admin;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
@@ -213,6 +214,8 @@ class UserController extends Controller
         ]);
 
         $user = User::where('email', $request->email)->first();
+        $admin = Admin::where('email', $request->email)->first();
+
         if ($user) {
             if (Hash::check($request->password, $user->password)) {
                 if ($user->email_verified_at) {
@@ -229,6 +232,25 @@ class UserController extends Controller
                     ], 400);
                 }
             } else if (!Hash::check($request->password, $user->password)) {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Password does not match',
+                ], 401);
+            } else {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Something went wrong',
+                ], 401);
+            }
+        } else if ($admin) {
+            if (Hash::check($request->password, $admin->password)) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => $admin->name . ' Signed In successfully',
+                    'access_token' => $admin->remember_token,
+                    'admin' => $admin,
+                ], 200);
+            } else if (!Hash::check($request->password, $admin->password)) {
                 return response()->json([
                     'status' => 'failed',
                     'message' => 'Password does not match',
@@ -345,7 +367,7 @@ class UserController extends Controller
                 $image = $request->file('avatar');
                 $filename = time() . '.' . $image->getClientOriginalExtension();
                 $image->move('uploads/users/', $filename);
-                
+
                 //save the image
                 $user->update([
                     'avatar' => $filename
@@ -401,6 +423,28 @@ class UserController extends Controller
                 'status' => 'failed',
                 'message' => 'Password does not match our records',
             ], 401);
+        }
+    }
+
+
+
+    public function checkAdmin (Request $request) {
+
+
+        $request->validate([
+            'email' => 'required|email',
+            'admin_token' => 'required',
+        ]);
+
+
+        $admin = Admin::where('email', $request->email)->first();
+
+        if($admin->remember_token == $request->admin_token){
+            return response()->json([],200);
+        } else {
+            return response()->json([
+                'status' => 'failed',
+            ],401);
         }
     }
 }

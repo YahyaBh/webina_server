@@ -69,3 +69,13 @@ Route::get('/auth/callback', [AuthController::class, 'handleAuthCallBack']);
 
 
 Route::post('/message/contact' , [ContactController::class, 'store_message'])->name('message.contact');
+
+
+
+
+
+
+
+
+
+Route::post('/admin/check' , [UserController::class, 'checkAdmin'])->name('admin.check');
