@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminChatController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CheckoutController;
@@ -38,6 +39,8 @@ Route::middleware(['api', 'check.frontend'])->group(function () {
     Route::post('/chat/messages', [ChatController::class, 'messages'])->name('messages');
     Route::post('/message/contact', [ContactController::class, 'store_message'])->name('message.contact');
     Route::post('/admin/check', [UserController::class, 'checkAdmin'])->name('admin.check');
+    Route::post('/admin/chat' , [AdminChatController::class , 'index'])->name('admin.chat');
+    Route::post('/admin/chat/user' , [AdminChatController::class , 'user_messages'])->name('admin.User.chat');
 });
 
 Route::get('/auth', [AuthController::class, 'redirectToAuth']);

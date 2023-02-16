@@ -17,8 +17,10 @@ return new class extends Migration
             $table->id();
             $table->string('full_name');
             $table->string('email')->unique();
-            $table->string('avatar')->default('/uploads/users/user_default.png');
+            $table->string('avatar')->default('user_default.png');
             $table->string('password');
+            $table->enum('available', ['true', 'false'])->default('true');
+            $table->string('chat_token');
             $table->rememberToken();
             $table->timestamps();
         });

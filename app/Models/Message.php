@@ -10,10 +10,16 @@ class Message extends Model
     use HasFactory;
 
 
-    protected $fillable = ['message' , 'sender_id' , 'receiver_id'];
+    protected $fillable = ['message' , 'sender_id' , 'receiver_token'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class);
     }
 }

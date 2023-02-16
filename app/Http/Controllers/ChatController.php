@@ -3,33 +3,76 @@
 namespace App\Http\Controllers;
 
 use App\Events\MessageEvent;
+use App\Models\Admin;
 use App\Models\User;
 use App\Models\Message;
 use Illuminate\Http\Request;
 
 class ChatController extends Controller
 {
+
+
+    public function getAdminToChat(Request  $request)
+    {
+
+        $request->validate([
+            'user_id' => 'required',
+            'sender_id' => 'required',
+        ]);
+
+        $user = User::where('id', $request->user_id)->first();
+
+        if ($user && $user->remember_token === $request->sender_id) {
+
+            $messages = Message::where('sender_id', $user->id);
+
+
+            if ($messages) {
+                return response()->json(['messages' => $messages], 200);
+            } else {
+
+                $admin = Admin::where('available', 'true')->random()->first();
+
+
+                if ($admin) {
+                    return response()->json([
+                        'status' => 'success',
+                        'reciever_token' => $admin->remember_token
+                    ], 200);
+                } else {
+                    $admin_already = Admin::random();
+
+                    return response()->json([
+                        'status' => 'success',
+                        'reciever_token' => $admin_already->remember_token
+                    ], 200);
+                }
+            }
+        }
+    }
+
     public function sendMessage(Request $request)
     {
         $request->validate([
             'message' => 'required',
             'user_id' => 'required',
             'user_token' => 'required',
-            'reciever_id' => 'required',
+            'reciever_token' => 'required',
         ]);
 
 
         $user = User::where('id', $request->user_id)->first();
 
-        if ($user && $user->remember_token === $request->user_token) {
+        $admin = Admin::where('remember_token', $request->reciever_token)->first();
+
+        if ($user && $user->remember_token === $request->user_token && $admin && $admin->remember_token === $request->reciever_token) {
 
             $message = $request->input('message');
-
 
             Message::create([
                 'message' => $message,
                 'sender_id' => $request->user_id,
-                'receiver_id' => $request->reciever_id,
+                'receiver_token' => $request->reciever_token,
             ]);
 
             $messages = Message::all();
@@ -51,16 +94,14 @@ class ChatController extends Controller
         $request->validate([
             'user_id' => 'required',
             'user_token' => 'required',
-            'reciever_id' => 'required',
+            'receiver_token' => 'required',
         ]);
 
         $user = User::where('id', $request->user_id)->first();
 
         if ($user && $user->remember_token == $request->user_token) {
 
-            $messages = Message::where('receiver_id', $request->reciever_id)->orWhere('sender_id', $request->se)->get();;
-
-            return response()->json(['messages' => $messages], 200);
+            $messages = Message::where('receiver_token', $request->receiver_token)->orWhere('sender_id', $request->user_id)->get();
         } else {
             return response()->json(['message' => 'Unauthorized User'], 401);
         }
