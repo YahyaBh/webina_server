@@ -14,14 +14,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-
-Auth::routes([
-    'verify' => true
-]);
-
-
 Route::middleware(['api', 'check.frontend'])->group(function () {
-    Route::get('/', [MainController::class, 'getTestimonialsFounders'])->name('home');
+    Route::get('/homepagetesti', [MainController::class, 'getTestimonialsFounders'])->name('home');
     Route::get('/blogs', [MainController::class, 'getBlogs'])->name('blogs');
     Route::get('/websites', [WebsitesController::class, 'index'])->name('websites_home');
     Route::post('/websites/create', [WebsitesController::class, 'store'])->name('create');
@@ -42,12 +36,17 @@ Route::middleware(['api', 'check.frontend'])->group(function () {
     Route::post('/logout', [UserController::class, 'logout'])->name('logout');
     Route::post('/chat/message', [ChatController::class, 'sendMessage'])->name('sendMessage');
     Route::post('/chat/messages', [ChatController::class, 'messages'])->name('messages');
-    Route::post('/email/verification', [UserController::class, 'sendVerificationEmail'])->name('verification');
-    Route::get('/email/check-verify/{email}/{token}', [UserController::class, 'verifyEmailget'])->name('check_verify_get');
-    Route::get('/email/verify/{email}/{token}', [UserController::class, 'verifyEmail'])->name('verify_email');
-    Route::post('/email/verify', [UserController::class, 'verifyEmailSign'])->name('verify_email');
-    Route::get('/auth', [AuthController::class, 'redirectToAuth']);
-    Route::get('/auth/callback', [AuthController::class, 'handleAuthCallBack']);
     Route::post('/message/contact', [ContactController::class, 'store_message'])->name('message.contact');
     Route::post('/admin/check', [UserController::class, 'checkAdmin'])->name('admin.check');
+});
+
+Route::get('/auth', [AuthController::class, 'redirectToAuth']);
+Route::get('/auth/callback', [AuthController::class, 'handleAuthCallBack']);
+Route::post('/email/verify', [UserController::class, 'verifyEmailSign'])->name('verify_email');
+Route::post('/email/verification', [UserController::class, 'sendVerificationEmail'])->name('verification');
+Route::get('/email/verify/{email}/{token}', [UserController::class, 'verifyEmail'])->name('verify_email');
+Route::get('/email/check-verify/{email}/{token}', [UserController::class, 'verifyEmailget'])->name('check_verify_get');
+
+Route::get('/invalid_url' , function () {
+    return view('invalid_url');
 });

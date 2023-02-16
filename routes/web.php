@@ -12,7 +12,7 @@ Route::middleware(['api', 'check.frontend'])->group(function () {
 });
 
 
-Route::get('/invalid_link', function () {
+Route::get('/invalid_url' , function () {
     return view('invalid_url');
 });
 

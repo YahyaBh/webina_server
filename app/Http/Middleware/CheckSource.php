@@ -10,8 +10,8 @@ class CheckSource
 {
     public function handle($request, Closure $next)
     {
-        if ($request->headers->get('Referer') !== config('app.url')) {
-            return redirect('/invalid_url');
+        if ($request->headers->get('Referer') !== 'http://localhost:3000/') {
+            return redirect('/api/invalid_url');
         }
 
         return $next($request);
