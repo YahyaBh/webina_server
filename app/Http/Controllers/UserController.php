@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+
 use NotificationPusher;
 
 class UserController extends Controller
@@ -186,7 +187,6 @@ class UserController extends Controller
     public function profile(Request $request)
     {
         $request->validate([
-            'remember_token' => 'required',
             'email' => 'required|email',
         ]);
 
@@ -195,7 +195,6 @@ class UserController extends Controller
         if ($user !== null) {
             return response()->json([
                 'status' => 'success',
-                'access_token' => $user->remember_token,
                 'user' => $user,
             ], 200);
         } else {
@@ -208,6 +207,8 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
+
+
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|min:8',
@@ -219,6 +220,9 @@ class UserController extends Controller
         if ($user) {
             if (Hash::check($request->password, $user->password)) {
                 if ($user->email_verified_at) {
+
+
+
                     return response()->json([
                         'status' => 'success',
                         'message' => $user->name . ' Signed In successfully',
@@ -428,7 +432,8 @@ class UserController extends Controller
 
 
 
-    public function checkAdmin (Request $request) {
+    public function checkAdmin(Request $request)
+    {
 
 
         $request->validate([
@@ -439,12 +444,12 @@ class UserController extends Controller
 
         $admin = Admin::where('email', $request->email)->first();
 
-        if($admin->remember_token == $request->admin_token){
-            return response()->json([],200);
+        if ($admin->remember_token == $request->admin_token) {
+            return response()->json([], 200);
         } else {
             return response()->json([
                 'status' => 'failed',
-            ],401);
+            ], 401);
         }
     }
 }
