@@ -16,12 +16,12 @@ return new class extends Migration
         Schema::create('messages', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedBigInteger('sender_id');
-            $table->string('receiver_token');
+            $table->unsignedBigInteger('reciever_id');
             $table->text('message');
 
 
             $table->foreign('sender_id')->references('id')->on('users');
-            // $table->foreign('receiver_token')->references('chat_token')->on('admins');
+            // $table->foreign('reciever_id')->references('id')->on('admins');
             $table->timestamps();
         });
     }

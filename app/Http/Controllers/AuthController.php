@@ -30,7 +30,7 @@ class AuthController extends Controller
                 ->redirect()
                 ->getTargetUrl(),
             'status' => 'success',
-        ]);
+        ], 200);
     }
 
 

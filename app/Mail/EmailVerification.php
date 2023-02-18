@@ -23,11 +23,11 @@ class EmailVerification extends Mailable
 
     public $url;
     
-    public function __construct(User $user , $token)
+    public function __construct(User $user , $hashedToken)
     {
         $this->user = $user;
 
-        $this->url = 'http://localhost:3000/email/verify/'.$user->email . '/' . $token;
+        $this->url = 'http://localhost:3000/email/verify/'.$user->email . '/' . $hashedToken;
 
     }
 

@@ -27,10 +27,12 @@ class UserController extends Controller
 
 
     private $access_token;
+    private $email_verification;
 
     public function __construct()
     {
         $this->access_token = uniqid(base64_encode(Str::random(40)));
+        $this->email_verification = Str::random(80);;
     }
 
     public function sendVerificationEmail(Request $request)
@@ -44,145 +46,75 @@ class UserController extends Controller
         $user = User::where('email', $data['email'])->first();
 
 
+
+
+
         if ($user) {
 
-            Mail::to($user->email)->send(new EmailVerification($user, $data['token']));
+            $user->update([
+                'remember_token' => $this->email_verification
+            ]);
 
-            return response()->json(["message" => "Email sent successfully.", 'email' => $user->email], 200);
+            Mail::to($user->email)->send(new EmailVerification($user, $this->email_verification));
+
+            return response()->json(["message" => "Email sent successfully."], 200);
         } else {
             return response()->json(["message" => "Email didn't sent , please try again later."], 401);
         }
     }
 
 
-
-    public function verifyEmail($email)
+    public function verifyEmail($email, $token)
     {
 
         $user = User::where('email', $email)->first();
-        $timeNow = Carbon::now();
 
+        if ($user) {
+            if ($user->remember_token === $token) {
+                $token_ = $user->createToken($user->email . 'auth_token')->plainTextToken;
 
-        if ($user && $user->created_at < $timeNow) {
-            if ($user) {
+                if (!$user->hasVerifiedEmail()) {
+                    $timeNoew = Carbon::now();
 
-                $user->email_verified_at = Carbon::now();
-                $user->save();
+                    $user->update([
+                        'email_verified_at' => $timeNoew
+                    ]);
 
-
-                if ($user->email_verified_at == null) {
-                    return response()->json([
-                        'status' => 'success',
-                        "message" => "Email verified succefully.",
-                        'access_token' => $user->remember_token,
-                        'user' => $user,
-                        'email' => $user->email
-                    ], 200);
-                } else if ($user->email_verified_at !== null) {
-                    return response()->json([
-                        'status' => 'success',
-                        "message" => "Email already verified.",
-                        'access_token' => $user->remember_token,
-                        'user' => $user,
-                        'email' => $user->email
-                    ], 200);
+                    return response()->json(["message" => "Email verified successfully.", 'user' => $user, 'access_token' => $token_], 200);
                 } else {
-                    return response()->json([
-                        'status' => 'failed',
-                        "message" => "Something went wrong. Please try again.",
-                    ], 401);
+                    return response()->json(["message" => "Email already verified.", 'user' => $user, 'access_token' => $token_], 200);
                 }
             } else {
-                return response()->json([
-                    'status' => 'failed',
-                    "message" => "Something went wrong. Please try again.",
-                ], 401);
+                return response()->json(["message" => "Token is incorrect."], 401);
             }
         } else {
-            User::where('email', $email)->delete();
-
-            return response()->json([
-                'status' => 'failed',
-                "message" => "The email link expired please try to register again.",
-            ], 401);
+            return response()->json(["message" => "User not found."], 404);
         }
     }
 
-    public function verifyEmailSign(Request $request)
+
+    public function checkVerification(Request $request)
     {
+
+
+        $request->validate([
+            'email' => 'required|email',
+        ]);
 
         $user = User::where('email', $request->email)->first();
 
         if ($user) {
-            if ($user->email_verified_at !== null) {
-                return response()->json([
-                    'status' => 'success',
-                    "message" => "Email verified succefully.",
-                    'access_token' => $user->remember_token,
-                    'user' => $user,
-                    'email' => $user->email
-                ], 200);
+            if ($user->hasVerifiedEmail()) {
+                $token_ = $user->createToken($user->email . 'auth_token')->plainTextToken;
+
+                return response()->json(["message" => "Email is verified.", 'user' => $user, 'access_token' => $token_], 200);
             } else {
-                return response()->json([
-                    'status' => 'failed',
-                    "message" => "Email not verifid , please try again.",
-                ], 401);
+                return response()->json(["message" => "Token is incorrect."], 401);
             }
         } else {
-            return response()->json([
-                'status' => 'failed',
-                "message" => "User not found , please try again.",
-            ], 401);
+            return response()->json(["message" => "User not found."], 404);
         }
     }
-
-    public function checkVerify(Request $request)
-    {
-
-        $user = User::where('email', $request->input('email'))->first();
-
-
-
-        if ($user && $user->email_verified_at && $user->remember_token == $request->input('token')) {
-            return response()->json([
-                'status' => 'success',
-                "message" => "Email verified succefully.",
-                'access_token' => $user->remember_token,
-                'user' => $user
-            ], 200);
-        } else if ($user->email_verified_at !== null) {
-            return response()->json([
-                'status' => 'failed',
-                "message" => "Email is not verified verified.",
-            ], 401);
-        }
-    }
-
-
-    public function verifyEmailget($email, $token)
-    {
-        $user = User::where('email', $email)->first();
-
-
-
-        if ($user && $user->email_verified_at && $user->remember_token === $token) {
-
-            return response()->json([
-                'status' => 'success',
-                "message" => "Email verified succefully.",
-                'access_token' => $user->remember_token,
-                'user' => $user
-            ], 200);
-        } else if ($user->email_verified_at === null || $user->remember_token !== $token) {
-            return response()->json([
-                'status' => 'failed',
-                "message" => "Email is not verified verified.",
-            ], 401);
-        }
-    }
-
-
-
 
     public function profile(Request $request)
     {
@@ -218,33 +150,31 @@ class UserController extends Controller
         $admin = Admin::where('email', $request->email)->first();
 
         if ($user) {
-            if (Hash::check($request->password, $user->password)) {
-                if ($user->email_verified_at) {
+            if ($user->email_verified_at) {
 
+                $credentials = $request->only('email', 'password');
 
+                if (Auth::attempt($credentials)) {
+
+                    $token = $user->createToken($user->email . 'auth_token')->plainTextToken;
 
                     return response()->json([
                         'status' => 'success',
                         'message' => $user->name . ' Signed In successfully',
-                        'access_token' => $user->remember_token,
+                        'access_token' => $token,
                         'user' => $user,
                     ], 200);
-                } else {
+                } else if (!Hash::check($request->password, $user->password)) {
                     return response()->json([
                         'status' => 'failed',
-                        'message' => 'Email is not verified',
-                    ], 400);
+                        'message' => 'Password does not match',
+                    ], 401);
                 }
-            } else if (!Hash::check($request->password, $user->password)) {
-                return response()->json([
-                    'status' => 'failed',
-                    'message' => 'Password does not match',
-                ], 401);
             } else {
                 return response()->json([
                     'status' => 'failed',
-                    'message' => 'Something went wrong',
-                ], 401);
+                    'message' => 'Email is not verified',
+                ], 400);
             }
         } else if ($admin) {
             if (Hash::check($request->password, $admin->password)) {
@@ -276,7 +206,6 @@ class UserController extends Controller
 
 
 
-
     public function register(Request $request)
     {
         $request->validate([
@@ -300,12 +229,11 @@ class UserController extends Controller
             $userFNfound = User::where('full_name', $postArray['full_name'])->first();
 
             if (!$userFNfound) {
-                User::create($postArray);
+                $user = User::create($postArray);
 
                 return response()->json([
                     'status' => 'success',
                     'message' => $request->name . 'Registred successfully',
-                    'access_token' =>  $this->access_token,
                     'user' => $postArray,
                 ]);
             } else {
@@ -346,12 +274,17 @@ class UserController extends Controller
                 'email' => $request->input('email'),
                 'password' => Hash::make($request->input('new_password')),
             ]);
+
+            $token = $user->createToken($user->email . 'auth_token')->plainTextToken;
         }
+
+
 
         return response()->json([
             'status' => 'success',
             'message' => 'User updated successfully',
             'user' => $user,
+            'access_token' => $token
         ], 200);
     }
 
@@ -366,41 +299,30 @@ class UserController extends Controller
 
         $user = User::findOrFail($request->user_id);
 
-        if ($user && $user->remember_token === $request->user_token) {
+        if ($user) {
             if ($request->has('avatar')) {
                 $image = $request->file('avatar');
                 $filename = time() . '.' . $image->getClientOriginalExtension();
                 $image->move('uploads/users/', $filename);
 
-                //save the image
                 $user->update([
                     'avatar' => $filename
                 ]);
+
+                $token = $user->createToken($user->email . 'auth_token')->plainTextToken;
 
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Image updated successfully',
                     'user' => $user,
+                    'access_token' => $token
                 ], 200);
             }
-        }
-    }
-
-
-
-    public function logout()
-    {
-        $cookie = Cookie::forget('token');
-        try {
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Signed Out successfully',
-            ], 200);
-        } catch (Exception $e) {
+        } else {
             return response()->json([
                 'status' => 'failed',
-                'message' => 'Something went wrong , while logging out',
-            ], 402);
+                'message' => 'User not found',
+            ], 401);
         }
     }
 

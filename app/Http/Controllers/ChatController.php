@@ -56,23 +56,22 @@ class ChatController extends Controller
         $request->validate([
             'message' => 'required',
             'user_id' => 'required',
-            'user_token' => 'required',
-            'reciever_token' => 'required',
+            'reciever_id' => 'required',
         ]);
 
 
         $user = User::where('id', $request->user_id)->first();
 
-        $admin = Admin::where('remember_token', $request->reciever_token)->first();
+        $admin = Admin::where('id', $request->reciever_id)->first();
 
-        if ($user && $user->remember_token === $request->user_token && $admin && $admin->remember_token === $request->reciever_token) {
+        if ($user) {
 
             $message = $request->input('message');
 
             Message::create([
                 'message' => $message,
                 'sender_id' => $request->user_id,
-                'receiver_token' => $request->reciever_token,
+                'reciever_id' => $request->reciever_id,
             ]);
 
             $messages = Message::all();
@@ -93,15 +92,14 @@ class ChatController extends Controller
     {
         $request->validate([
             'user_id' => 'required',
-            'user_token' => 'required',
-            'receiver_token' => 'required',
+            'reciever_id' => 'required',
         ]);
 
         $user = User::where('id', $request->user_id)->first();
 
-        if ($user && $user->remember_token == $request->user_token) {
+        if ($user) {
 
-            $messages = Message::where('receiver_token', $request->receiver_token)->orWhere('sender_id', $request->user_id)->get();
+            $messages = Message::where('reciever_id', $request->reciever_id)->orWhere('sender_id', $request->user_id)->get();
         } else {
             return response()->json(['message' => 'Unauthorized User'], 401);
         }
