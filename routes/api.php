@@ -9,7 +9,7 @@ use App\Http\Controllers\SubscribeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebsitesController;
 use App\Http\Controllers\Admin\AdminChatController;
-
+use App\Http\Controllers\Admin\AdminDashboardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -41,11 +41,28 @@ Route::get('/email/verify/{email}/{token}', [UserController::class, 'verifyEmail
 
 
 Route::middleware('auth:sanctum')->group(function () {
+
+
+    Route::middleware('admin')->group(function () {
+
+        Route::post('/websites/create', [WebsitesController::class, 'store'])->name('create');
+        Route::post('/websites/update', [WebsitesController::class, 'update'])->name('update.website');
+        Route::post('/websites/delete', [WebsitesController::class, 'delete'])->name('delete.website');
+        
+        Route::post('/admin/dashboard' , [AdminDashboardController::class, 'index'])->name('dashboard');
+        
+        Route::post('/admin/chat', [AdminChatController::class, 'admin_chat'])->name('admin.chat');
+        Route::post('/admin/chat/user', [AdminChatController::class, 'user_messages'])->name('admin.User.chat');
+    
+        Route::post('/admin/users', [AdminUsersController::class, 'user_index'])->name('admin.users');
+
+        Route::post('/admin/orders', [AdminOrdersController::class, 'orders_show'])->name('admin.orders');
+        Route::post('/admin/order/confirmation', [AdminOrdersController::class, 'order_status'])->name('admin.order.confirmation');
+    });
+
     Route::post('/profile', [UserController::class, 'profile'])->name('profile');
 
-    Route::post('/websites/create', [WebsitesController::class, 'store'])->name('create');
     Route::get('/website/{token}', [WebsitesController::class, 'show'])->name('delete');
-    Route::delete('/website/delete/{token}', [WebsitesController::class, 'delete'])->name('delete');
 
     Route::post('/orders', [OrdersController::class, 'orders_all'])->name('orders');
     Route::post('/orders/create', [OrdersController::class, 'create_order'])->name('create_order');
@@ -59,13 +76,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user/update/avatar', [UserController::class, 'updateAvatar'])->name('updateAvatar');
     Route::post('/user/delete', [UserController::class, 'delete'])->name('delete');
 
-    Route::post('/admin/check', [UserController::class, 'checkAdmin'])->name('admin.check');
-
     Route::post('/chat/message', [ChatController::class, 'sendMessage'])->name('sendMessage');
     Route::post('/chat/messages', [ChatController::class, 'messages'])->name('messages');
-
-
-
-    Route::post('/admin/chat', [AdminChatController::class, 'index'])->name('admin.chat');
-    Route::post('/admin/chat/user', [AdminChatController::class, 'user_messages'])->name('admin.User.chat');
 });

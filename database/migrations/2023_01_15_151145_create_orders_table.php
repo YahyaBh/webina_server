@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('order_number');
             $table->unsignedBigInteger('user_id');
             $table->string('website_token');
-            $table->string('user_token');
             $table->enum('status', ['pending', 'processing', 'completed', 'decline'])->default('pending');
             $table->float('grand_total');
             $table->integer('item_count');

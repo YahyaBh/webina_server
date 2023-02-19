@@ -16,11 +16,11 @@ class OrdersController extends Controller
     {
 
         $request->validate([
-            'user_token' => 'required',
+            'user_id' => 'required',
         ]);
 
 
-        $user = User::where('remember_token', $request->user_token)->first();
+        $user = User::where('id', $request->user_id)->first();
 
         if ($user) {
 
@@ -59,12 +59,11 @@ class OrdersController extends Controller
     public function order_show(Request $request)
     {
         $request->validate([
-            'user_token' => 'required',
             'order_token' => 'required',
             'user_id' => 'required',
         ]);
 
-        $user = User::where('remember_token', $request->user_token)->first();
+        $user = User::where('id', $request->user_id)->first();
 
         if ($user) {
             try {

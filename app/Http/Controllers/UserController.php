@@ -147,7 +147,7 @@ class UserController extends Controller
         ]);
 
         $user = User::where('email', $request->email)->first();
-        $admin = Admin::where('email', $request->email)->first();
+
 
         if ($user) {
             if ($user->email_verified_at) {
@@ -175,25 +175,6 @@ class UserController extends Controller
                     'status' => 'failed',
                     'message' => 'Email is not verified',
                 ], 400);
-            }
-        } else if ($admin) {
-            if (Hash::check($request->password, $admin->password)) {
-                return response()->json([
-                    'status' => 'success',
-                    'message' => $admin->name . ' Signed In successfully',
-                    'access_token' => $admin->remember_token,
-                    'admin' => $admin,
-                ], 200);
-            } else if (!Hash::check($request->password, $admin->password)) {
-                return response()->json([
-                    'status' => 'failed',
-                    'message' => 'Password does not match',
-                ], 401);
-            } else {
-                return response()->json([
-                    'status' => 'failed',
-                    'message' => 'Something went wrong',
-                ], 401);
             }
         } else {
             return response()->json([
