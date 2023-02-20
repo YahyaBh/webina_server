@@ -6,6 +6,7 @@ use App\Events\MessageEvent;
 use App\Models\Admin;
 use App\Models\User;
 use App\Models\Message;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ChatController extends Controller
@@ -22,7 +23,7 @@ class ChatController extends Controller
 
         $user = User::where('id', $request->user_id)->first();
 
-        if ($user && $user->remember_token === $request->sender_id) {
+        if ($user) {
 
             $messages = Message::where('sender_id', $user->id);
 
@@ -31,23 +32,23 @@ class ChatController extends Controller
                 return response()->json(['messages' => $messages], 200);
             } else {
 
-                $admin = Admin::where('available', 'true')->random()->first();
-
+                $admin = User::where('role', 'admin')->random()->first();
 
                 if ($admin) {
                     return response()->json([
                         'status' => 'success',
-                        'reciever_token' => $admin->remember_token
+                        'reciever_id' => $admin->id
                     ], 200);
                 } else {
-                    $admin_already = Admin::random();
 
                     return response()->json([
                         'status' => 'success',
-                        'reciever_token' => $admin_already->remember_token
+                        'reciever_id' => $admin->id
                     ], 200);
                 }
             }
+        } else {
+            return response()->json(['status' => 'failed', 'message' => 'User not found'], 404);
         }
     }
 
@@ -62,9 +63,10 @@ class ChatController extends Controller
 
         $user = User::where('id', $request->user_id)->first();
 
-        $admin = Admin::where('id', $request->reciever_id)->first();
+        $admin = User::where('id', $request->reciever_id)->first();
 
-        if ($user) {
+
+        if ($user && $admin) {
 
             $message = $request->input('message');
 
@@ -99,7 +101,11 @@ class ChatController extends Controller
 
         if ($user) {
 
+
             $messages = Message::where('reciever_id', $request->reciever_id)->orWhere('sender_id', $request->user_id)->get();
+
+
+            return response()->json(['messages' => $messages], 200);
         } else {
             return response()->json(['message' => 'Unauthorized User'], 401);
         }

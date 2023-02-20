@@ -3,6 +3,10 @@
 namespace App\Http;
 
 use App\Http\Middleware\Admin;
+use App\Models\Analyzer;
+use App\Models\Orders;
+use Carbon\Carbon;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -14,6 +18,29 @@ class Kernel extends HttpKernel
      *
      * @var array<int, class-string|string>
      */
+
+    protected function schedule(Schedule $schedule): void
+    {
+        $schedule->call(function () {
+
+            $date = Carbon::now();
+
+            $orders_numb = Orders::count();
+
+            Analyzer::create([
+                'data_name' => 'Orders',
+                $date->format('F') . '_data' => $orders_numb
+            ]);
+
+            Analyzer::create([
+                'data_name' => 'Users',
+                $date->format('F') . '_data' => $orders_numb
+            ]);
+
+            
+        })->monthly();
+    }
+
     protected $middleware = [
         // \App\Http\Middleware\TrustHosts::class,
         \App\Http\Middleware\TrustProxies::class,

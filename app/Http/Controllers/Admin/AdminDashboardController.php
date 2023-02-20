@@ -3,28 +3,46 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Analyzer;
 use App\Models\Orders;
 use App\Models\User;
 use Illuminate\Http\Request;
 
 class AdminDashboardController extends Controller
 {
-    
 
-    public function __construct() {
 
+    public function __construct()
+    {
     }
 
 
-    public function index(Request $request) {
-    
+    public function index(Request $request)
+    {
+
         $users = User::count();
         $orders = Orders::count();
+
+        $users_array = Analyzer::where('data_name', 'Users')->get();
+        $orders_array = Analyzer::where('data_name', 'Orders')->get();
+
+
+        $canceled_orders = Orders::where('status', 'canceled')->count();
+        $pending_orders = Orders::where('status', 'pending')->count();
+
+        $recenetly_orders = Orders::orderBy('created_at', 'desc')->limit('5')->get();
+        $recenetly_users = User::orderBy('created_at', 'desc')->limit('5')->get();
+
 
         return response()->json([
             'users' => $users,
             'orders' => $orders,
-        ],200);
-
+            'users_array' => $users_array,
+            'orders_array' => $orders_array,
+            'recenetly_orders' => $recenetly_orders,
+            'recenetly_users' => $recenetly_users,
+            'canceled_orders' => $canceled_orders,
+            'pending_orders' => $pending_orders,
+        ], 200);
     }
 }

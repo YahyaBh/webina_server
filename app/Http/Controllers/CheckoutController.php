@@ -48,9 +48,7 @@ class CheckoutController extends Controller
 
                 Orders::create([
                     'user_id' => $request->user_id,
-                    'user_token' => $request->user_token,
                     'order_number' => $response->id,
-                    'user_token' => $request->user_token,
                     'status' => 'pending',
                     'grand_total' => $request->price,
                     'item_count' => 1,
