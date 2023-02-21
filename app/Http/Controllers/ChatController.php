@@ -61,32 +61,58 @@ class ChatController extends Controller
         ]);
 
 
+
         $user = User::where('id', $request->user_id)->first();
 
-        $admin = User::where('id', $request->reciever_id)->first();
+        $messages = Message::where('sender_id', $user->id)->first();
+
+        $message = $request->input('message');
 
 
-        if ($user && $admin) {
+        if ($messages) {
 
-            $message = $request->input('message');
-
-
-
-            Message::create([
-                'message' => $message,
-                'sender_id' => $request->user_id,
-                'reciever_id' => $request->reciever_id,
-            ]);
-
-            $messages = Message::all();
-
-            event(new MessageEvent($messages));
+            $admin = User::where('id', $request->reciever_id)->first();
 
 
+            if ($user && $admin) {
 
-            return response()->json(['message' => $message], 200);
+                Message::create([
+                    'message' => $message,
+                    'sender_id' => $request->user_id,
+                    'reciever_id' => $request->reciever_id,
+                ]);
+
+                $messages = Message::all();
+
+                event(new MessageEvent($messages));
+
+
+                return response()->json(['message' => $message], 200);
+            } else {
+                return response()->json(['message' => 'Unauthorized User'], 401);
+            }
         } else {
-            return response()->json(['message' => 'Unauthorized User'], 401);
+
+            $admin = User::where(['role', 'admin'], ['disponible', 'yes'])->random()->first();
+
+            if ($user && $admin) {
+
+                Message::create([
+                    'message' => $message,
+                    'sender_id' => $request->user_id,
+                    'reciever_id' => $admin->id
+                ]);
+
+                $admin->update(['disponible' => 'no']);
+
+                $messages = Message::all();
+
+                event(new MessageEvent($messages));
+
+                return response()->json(['message' => $message], 200);
+            } else {
+                return response()->json(['message' => 'Unauthorized User'], 401);
+            }
         }
     }
 
