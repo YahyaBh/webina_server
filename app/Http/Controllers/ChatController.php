@@ -70,6 +70,8 @@ class ChatController extends Controller
 
             $message = $request->input('message');
 
+
+
             Message::create([
                 'message' => $message,
                 'sender_id' => $request->user_id,
@@ -98,6 +100,14 @@ class ChatController extends Controller
         ]);
 
         $user = User::where('id', $request->user_id)->first();
+
+        $message = Message::where('reciever_id', $request->user_id);
+
+        return response()->json([
+            'user_id' => $request->user_id,
+            'reciever_id' => $request->reciever_id,
+            'messages' => $message->get()
+        ]);
 
         if ($user) {
 
