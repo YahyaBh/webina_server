@@ -68,7 +68,7 @@ class ChatController extends Controller
 
         if ($messages) {
 
-            $admin = User::where('id', $request->reciever_id)->first();
+            $admin = User::where('id', $messages->reciever_id)->first();
 
             if ($user && $admin) {
 
@@ -89,7 +89,7 @@ class ChatController extends Controller
             }
         } else {
 
-            $admin = User::where(['role', 'admin'], ['disponible', 'yes'])->random()->first();
+            $admin = User::where([['role', 'admin'], ['disponible', 'yes']])->get()->random(1);
 
             if ($user && $admin) {
 
@@ -118,21 +118,11 @@ class ChatController extends Controller
     {
         $request->validate([
             'user_id' => 'required',
-            'reciever_id' => 'required',
         ]);
 
         $user = User::where('id', $request->user_id)->first();
 
-        $message = Message::where('reciever_id', $request->user_id);
-
-        return response()->json([
-            'user_id' => $request->user_id,
-            'reciever_id' => $request->reciever_id,
-            'messages' => $message->get()
-        ]);
-
         if ($user) {
-
 
             $messages = Message::where('reciever_id', $request->reciever_id)->orWhere('sender_id', $request->user_id)->get();
 

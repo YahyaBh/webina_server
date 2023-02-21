@@ -212,6 +212,8 @@ class UserController extends Controller
             if (!$userFNfound) {
                 $user = User::create($postArray);
 
+                $user->update('disponible' , 'no');
+
                 $token = $user->createToken($user->email . 'auth_token')->plainTextToken;
 
 
@@ -308,6 +310,17 @@ class UserController extends Controller
                 'status' => 'failed',
                 'message' => 'User not found',
             ], 401);
+        }
+    }
+
+    public function logout(Request $request)
+    {
+        try {
+            Auth::logout();
+
+            return response()->json(['status' => 'success'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'failed', 'message' => $e->getMessage()], 401);
         }
     }
 
