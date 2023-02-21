@@ -57,10 +57,7 @@ class ChatController extends Controller
         $request->validate([
             'message' => 'required',
             'user_id' => 'required',
-            'reciever_id' => 'required',
         ]);
-
-
 
         $user = User::where('id', $request->user_id)->first();
 
@@ -73,13 +70,12 @@ class ChatController extends Controller
 
             $admin = User::where('id', $request->reciever_id)->first();
 
-
             if ($user && $admin) {
 
                 Message::create([
                     'message' => $message,
                     'sender_id' => $request->user_id,
-                    'reciever_id' => $request->reciever_id,
+                    'reciever_id' => $messages->reciever_id,
                 ]);
 
                 $messages = Message::all();
