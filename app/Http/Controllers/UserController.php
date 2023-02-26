@@ -212,7 +212,7 @@ class UserController extends Controller
             if (!$userFNfound) {
                 $user = User::create($postArray);
 
-                $user->update('disponible' , 'no');
+                $user->update(['disponible' , 'no']);
 
                 $token = $user->createToken($user->email . 'auth_token')->plainTextToken;
 
