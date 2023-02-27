@@ -80,6 +80,9 @@ class UserController extends Controller
                         'email_verified_at' => $timeNoew
                     ]);
 
+                    $token = $user->createToken($user->email . 'auth_token')->plainTextToken;
+
+
                     return response()->json(["message" => "Email verified successfully.", 'user' => $user, 'access_token' => $token_], 200);
                 } else {
                     return response()->json(["message" => "Email already verified.", 'user' => $user, 'access_token' => $token_], 200);
@@ -105,7 +108,7 @@ class UserController extends Controller
 
         if ($user) {
             if ($user->hasVerifiedEmail()) {
-                $token = $user->createToken($user->email . 'auth_token')->plainTextToken;
+                $token_ = $user->createToken($user->email . 'auth_token')->plainTextToken;
 
                 return response()->json(["message" => "Email is verified.", 'user' => $user, 'access_token' => $token], 200);
             } else {
