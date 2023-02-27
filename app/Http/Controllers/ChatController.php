@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Message;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
 {
@@ -56,10 +57,9 @@ class ChatController extends Controller
     {
         $request->validate([
             'message' => 'required',
-            'user_id' => 'required',
         ]);
 
-        $user = User::where('id', $request->user_id)->first();
+        $user = User::where('id', Auth::user()->id)->first();
 
         $messages = Message::where('sender_id', $user->id)->first();
 
@@ -74,7 +74,7 @@ class ChatController extends Controller
 
                 Message::create([
                     'message' => $message,
-                    'sender_id' => $request->user_id,
+                    'sender_id' => Auth::user()->id,
                     'reciever_id' => $messages->reciever_id,
                 ]);
 
@@ -89,13 +89,13 @@ class ChatController extends Controller
             }
         } else {
 
-            $admin = User::where([['role', 'admin'], ['disponible', 'yes']])->get()->random(1);
+            $admin = User::where([['role', 'admin'], ['disponible', 'yes']])->inRandomOrder()->first();
 
             if ($user && $admin) {
 
                 Message::create([
                     'message' => $message,
-                    'sender_id' => $request->user_id,
+                    'sender_id' => Auth::user()->id,
                     'reciever_id' => $admin->id
                 ]);
 
@@ -116,15 +116,12 @@ class ChatController extends Controller
 
     public function messages(Request $request)
     {
-        $request->validate([
-            'user_id' => 'required',
-        ]);
 
-        $user = User::where('id', $request->user_id)->first();
+        $user = User::where('id', Auth::user()->id)->first();
 
         if ($user) {
 
-            $messages = Message::where('reciever_id', $request->reciever_id)->orWhere('sender_id', $request->user_id)->get();
+            $messages = Message::where('reciever_id', $user->id)->orWhere('sender_id', $user->id)->get();
 
 
             return response()->json(['messages' => $messages], 200);
