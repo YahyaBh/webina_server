@@ -5,6 +5,7 @@ namespace App\Http;
 use App\Http\Middleware\Admin;
 use App\Models\Analyzer;
 use App\Models\Orders;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
@@ -25,16 +26,19 @@ class Kernel extends HttpKernel
 
             $date = Carbon::now();
 
-            $orders_numb = Orders::count();
+            $users_numb = User::get();
+            $orders_numb = Orders::get();
 
-            Analyzer::create([
-                'data_name' => 'Orders',
-                $date->format('F') . '_data' => $orders_numb
+
+            $Analyzer_users_number = Analyzer::where('data_name' , 'users_number');
+            $Analyzer_orders_number = Analyzer::where('data_name' , 'orders_number');
+
+            $Analyzer_users_number->update([
+                $date->format('F') . '_data' => $users_numb->count()
             ]);
 
-            Analyzer::create([
-                'data_name' => 'Users',
-                $date->format('F') . '_data' => $orders_numb
+            $Analyzer_orders_number::create([
+                $date->format('F') . '_data' => $orders_numb->count()
             ]);
 
             

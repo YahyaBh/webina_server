@@ -10,8 +10,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebsitesController;
 use App\Http\Controllers\Admin\AdminChatController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminOrdersController;
 use App\Http\Controllers\ChatController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
@@ -57,7 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
         Route::post('/admin/users', [AdminUsersController::class, 'user_index'])->name('admin.users');
 
-        Route::post('/admin/orders', [AdminOrdersController::class, 'orders_show'])->name('admin.orders');
+        Route::get('/admin/orders', [AdminOrdersController::class, 'index'])->name('admin.orders');
         Route::post('/admin/order/confirmation', [AdminOrdersController::class, 'order_status'])->name('admin.order.confirmation');
     });
 
