@@ -57,8 +57,9 @@ Route::middleware('auth:sanctum')->group(function () {
     
         Route::post('/admin/users', [AdminUsersController::class, 'user_index'])->name('admin.users');
 
-        Route::get('/admin/orders', [AdminOrdersController::class, 'index'])->name('admin.orders');
-        Route::post('/admin/order/confirmation', [AdminOrdersController::class, 'order_status'])->name('admin.order.confirmation');
+        Route::post('/admin/orders', [AdminDashboardController::class , 'getOrders'])->name('admin.orders');
+
+        // Route::post('/admin/order/confirmation', [AdminOrdersController::class, 'order_status'])->name('admin.order.confirmation');
     });
 
     Route::post('/profile', [UserController::class, 'profile'])->name('profile');

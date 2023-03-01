@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Analyzer;
 use App\Models\Orders;
 use App\Models\User;
+use App\Models\Websites;
 use Illuminate\Http\Request;
 
 class AdminDashboardController extends Controller
@@ -14,6 +15,21 @@ class AdminDashboardController extends Controller
 
     public function __construct()
     {
+    }
+
+    public function getOrders()
+    {
+        $orders =  Orders::all();
+        $users = User::all();
+        $websites = Websites::all();
+
+
+        return response()->json([
+            'message' => 'Success',
+            'orders' => $orders,
+            'users' => $users,
+            'websites' => $websites
+        ], 200);
     }
 
 
