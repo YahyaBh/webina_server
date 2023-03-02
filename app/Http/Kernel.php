@@ -20,29 +20,34 @@ class Kernel extends HttpKernel
      * @var array<int, class-string|string>
      */
 
-    protected function schedule(Schedule $schedule): void
+    // protected function schedule(Schedule $schedule)
+    // {
+    //     $schedule->command('users:total')->monthlyOn(1, '00:00');
+
+    //     $schedule->call(function () {
+    //         $date = Carbon::now();
+
+    //         $users_numb = User::get();
+    //         $orders_numb = Orders::get();
+
+
+    //         Analyzer::create([
+    //             'data_name' => 'users_total',
+    //             'number' => $users_numb->count(),
+    //             'date' => $date->format('F')
+    //         ]);
+
+    //         Analyzer::create([
+    //             'data_name' => 'orders_total',
+    //             'number' => $orders_numb->count(),
+    //             'date' => $date->format('F')
+    //         ]);
+    //     })->monthlyOn(1, '00:00');
+    // }
+
+    protected function schedule(Schedule $schedule)
     {
-        $schedule->call(function () {
-
-            $date = Carbon::now();
-
-            $users_numb = User::get();
-            $orders_numb = Orders::get();
-
-
-            $Analyzer_users_number = Analyzer::where('data_name' , 'users_number');
-            $Analyzer_orders_number = Analyzer::where('data_name' , 'orders_number');
-
-            $Analyzer_users_number->update([
-                $date->format('F') . '_data' => $users_numb->count()
-            ]);
-
-            $Analyzer_orders_number::create([
-                $date->format('F') . '_data' => $orders_numb->count()
-            ]);
-
-            
-        })->monthly();
+        $schedule->command('users:total')->monthlyOn(1, '00:00');
     }
 
     protected $middleware = [
