@@ -17,19 +17,33 @@ class AdminDashboardController extends Controller
     {
     }
 
-    public function getOrders()
+    public function getOrders(Request $request)
     {
-        $orders =  Orders::all();
-        $users = User::all();
-        $websites = Websites::all();
+
+        $request->validate([
+            'type' => 'required',
+        ]);
+
+        if ($request->has('type') && $request->type == 'All') {
+
+            $users = User::all();
+            $websites = Websites::all();
+
+            if ($request->type == 'All') {
+                $orders =  Orders::all();
+            } else {
+                $orders = Orders::where('status', $request->type)->get();
+            }
 
 
-        return response()->json([
-            'message' => 'Success',
-            'orders' => $orders,
-            'users' => $users,
-            'websites' => $websites
-        ], 200);
+            return response()->json([
+                'message' => 'Success',
+                'orders' => $orders,
+                'users' => $users,
+                'websites' => $websites,
+                '$request' => 'HH',
+            ], 200);
+        }
     }
 
 
