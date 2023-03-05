@@ -24,28 +24,75 @@ class AdminDashboardController extends Controller
             'type' => 'required',
         ]);
 
-        if ($request->has('type') && $request->type == 'All') {
+        $users = User::all();
+        $websites = Websites::all();
 
-            $users = User::all();
-            $websites = Websites::all();
-
-            if ($request->type == 'All') {
-                $orders =  Orders::all();
-            } else {
-                $orders = Orders::where('status', $request->type)->get();
-            }
-
+        if ($request->type == 'all') {
+            $orders =  Orders::all();
 
             return response()->json([
                 'message' => 'Success',
                 'orders' => $orders,
                 'users' => $users,
                 'websites' => $websites,
-                '$request' => 'HH',
+                'request' => $request->type
+            ], 200);
+        } else {
+            $orders = Orders::where('status', $request->type)->get();
+            return response()->json([
+                'message' => 'Success',
+                'orders' => $orders,
+                'users' => $users,
+                'websites' => $websites,
+                'request' => $request->type
+
             ], 200);
         }
     }
 
+
+    public function getOrder(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+        ]);
+
+        $order = Orders::where('order_number', $request->id)->first();
+
+        if ($order) {
+
+            $user  = User::where('id', $order->user_id)->first();
+
+
+            if ($user) {
+
+                $website = Websites::where('token', $order->website_token)->first();
+
+                if ($website) {
+
+                    return response()->json([
+                        'message' => 'Success',
+                        'order' => $order,
+                        'client' => $user,
+                        'website' => $website,
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'message' => 'Websites not found',
+                    ], 404);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'User not found',
+                ], 404);
+            }
+        } else {
+
+            return resposne()->json([
+                'message' => 'Order not found',
+            ], 404);
+        }
+    }
 
     public function index()
     {
