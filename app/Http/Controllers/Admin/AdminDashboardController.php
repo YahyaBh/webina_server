@@ -87,9 +87,8 @@ class AdminDashboardController extends Controller
                 ], 404);
             }
         } else {
-
-            return resposne()->json([
-                'message' => 'Order not found',
+            return response()->json([
+                'message' => 'Something went wrong',
             ], 404);
         }
     }

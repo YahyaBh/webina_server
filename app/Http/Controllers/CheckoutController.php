@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AdminMail;
 use App\Models\Orders;
 use App\Models\User;
 use App\Models\Websites;
 use Exception;
 use Faker\Provider\uk_UA\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Stripe\Exception\CardException;
 use Stripe\StripeClient;
@@ -57,6 +59,10 @@ class CheckoutController extends Controller
                     'notes' => $request->description,
                     'website_token' => $request->website_token,
                 ]);
+
+
+                Mail::to('gamesy865@gmail.com')->send(new AdminMail('New Order Has Been Created', $response->id, $user));
+
 
                 return response()->json([
                     'status' => 'success',
