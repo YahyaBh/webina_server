@@ -143,4 +143,40 @@ class AdminDashboardController extends Controller
             'var_orders' => $var_orders,
         ], 200);
     }
+
+
+    public function users_index(Request $request)
+    {
+
+        $request->validate([
+            'orderBy' => 'required'
+        ]);
+
+        if ($request->orderBy == 'newest') {
+            $users = User::orderBy('created_at', 'desc')->get();
+        } else if ($request->orderBy == 'name') {
+            $users = User::orderBy('full_name')->get();
+        } else if ($request->orderBy == 'orders') {
+            $users = User::orderBy('orders_total', 'desc')->get();
+        } else if ($request->orderBy == 'banned') {
+            $users = User::where('banned', 'Yes')->get();
+        }
+
+
+        return response()->json([
+            'message' => 'Success',
+            'users' => $users,
+        ], 200);
+    }
+
+
+
+    public function website_index(Request $request) {
+        $request->validate([
+            'type' => 'required'
+        ]);
+
+
+        
+    }
 }

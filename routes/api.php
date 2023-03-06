@@ -55,11 +55,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/admin/chat', [AdminChatController::class, 'admin_chat'])->name('admin.chat');
         Route::post('/admin/chat/user', [AdminChatController::class, 'user_messages'])->name('admin.User.chat');
     
-        Route::post('/admin/users', [AdminUsersController::class, 'user_index'])->name('admin.users');
+        Route::post('/admin/users', [AdminDashboardController::class, 'users_index'])->name('admin.users');
 
         Route::post('/admin/orders', [AdminDashboardController::class , 'getOrders'])->name('admin.orders');
         Route::post('/admin/order', [AdminDashboardController::class , 'getOrder'])->name('admin.order');
 
+        Route::post('/admin/websites', [AdminDashboardController::class, 'website_index'])->name('admin.websites');
 
         // Route::post('/admin/order/confirmation', [AdminOrdersController::class, 'order_status'])->name('admin.order.confirmation');
     });

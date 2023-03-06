@@ -47,6 +47,10 @@ class CheckoutController extends Controller
                     'receipt_email' => $request->user_email,
                 ]);
 
+                $user->update([
+                    'orders_total' => $user->orders_total + $request->price,
+                ]);
+
 
                 Orders::create([
                     'user_id' => $request->user_id,
