@@ -16,7 +16,19 @@ return new class extends Migration
         Schema::create('analyzers', function (Blueprint $table) {
             $table->id();
             $table->string('data_name');
-            $table->string('date');
+            $table->string('year');
+            $table->string('January');
+            $table->string('February');
+            $table->string('March');
+            $table->string('April');
+            $table->string('May');
+            $table->string('June');
+            $table->string('July');
+            $table->string('August');
+            $table->string('September');
+            $table->string('October');
+            $table->string('November');
+            $table->string('December');
             $table->integer('number');
             $table->timestamps();
         });

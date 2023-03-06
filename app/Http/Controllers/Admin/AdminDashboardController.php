@@ -93,11 +93,15 @@ class AdminDashboardController extends Controller
         }
     }
 
+    public $order_number;
+    public $user_number;
+
+
     public function index()
     {
 
-        $users = User::count();
-        $orders = Orders::count();
+        $users = User::all();
+        $orders = Orders::all();
 
         $users_array = Analyzer::where('data_name', 'Users')->get();
         $orders_array = Analyzer::where('data_name', 'Orders')->get();
@@ -110,15 +114,33 @@ class AdminDashboardController extends Controller
         $recenetly_users = User::orderBy('created_at', 'desc')->limit('5')->get();
 
 
+        $var_orders = Analyzer::where('data_name', 'orders_total')->get();
+        $var_users = Analyzer::where('data_name', 'users_total')->get();
+
+
+        foreach ($users as $user_for) {
+            $order = Orders::where('user_id', $user_for->id)->first();
+
+            if ($order) {
+                $this->order_number++;
+            } else {
+                $this->user_number++;
+            }
+        }
+
         return response()->json([
-            'users' => $users,
-            'orders' => $orders,
+            'total_orders' => $orders->count(),
+            'total_users' => $users->count(),
+            'users' => $this->user_number,
+            'orders' => $this->order_number,
             'users_array' => $users_array,
             'orders_array' => $orders_array,
             'recenetly_orders' => $recenetly_orders,
             'recenetly_users' => $recenetly_users,
             'canceled_orders' => $canceled_orders,
             'pending_orders' => $pending_orders,
+            'var_users' => $var_users,
+            'var_orders' => $var_orders,
         ], 200);
     }
 }
