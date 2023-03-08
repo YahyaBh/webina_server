@@ -170,13 +170,64 @@ class AdminDashboardController extends Controller
     }
 
 
+    public function setOrderStatus(Request $request)
+    {
 
-    public function website_index(Request $request) {
+
+        $request->validate([
+            'id' => 'required',
+            'status' => 'required'
+        ]);
+
+        $order = Orders::find($request->id);
+
+        if ($order) {
+            if ($request->status === $order->status) {
+                return response()->json([
+                    'message' => "Can't set order status",
+                ]);
+            } else {
+                $order->update([
+                    'status' => $request->status
+                ]);
+
+                return response()->json([
+                    'message' => 'Success',
+                    'order' => $order
+                ]);
+            }
+        } else {
+            return response()->json([
+                'message' => 'Unable to find order status',
+            ], 404);
+        }
+    }
+
+
+    public function website_index(Request $request)
+    {
         $request->validate([
             'type' => 'required'
         ]);
 
 
-        
+        $websites = Websites::all();
+        if ($request->type == 'all') {
+
+            $users = User::all();
+
+            return response()->json([
+                'message' => 'Success',
+                'websites' => $websites,
+                'users' => $users
+            ], 200);
+        } else {
+            $websites = $websites->where('type', $request->type);
+
+            return response()->json([
+                'message' => 'Success',
+                'websites' => $websites
+            ], 200);
+        }
     }
 }

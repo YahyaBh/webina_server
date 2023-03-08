@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('token', 64)->unique()->default('0000-0000-0000-0000-0000');
             $table->string('category')->nullable();
             $table->integer('price');
+            $table->integer('old_price');
+            $table->integer('stars')->nullable();
             $table->string('developing_Time')->default('1 to 5 days');
             $table->string('status')->default('available');
             $table->string('specifications')->nullable();
