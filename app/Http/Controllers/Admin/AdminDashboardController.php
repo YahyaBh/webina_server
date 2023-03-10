@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\OrderChanged;
 use App\Http\Controllers\Controller;
 use App\Models\Analyzer;
 use App\Models\Orders;
@@ -181,6 +182,7 @@ class AdminDashboardController extends Controller
 
         $order = Orders::find($request->id);
 
+
         if ($order) {
             if ($request->status === $order->status) {
                 return response()->json([
@@ -190,6 +192,10 @@ class AdminDashboardController extends Controller
                 $order->update([
                     'status' => $request->status
                 ]);
+
+                $orders = Orders::where('user_id', $order->user_id)->get();
+
+                event(new OrderChanged($orders));
 
                 return response()->json([
                     'message' => 'Success',

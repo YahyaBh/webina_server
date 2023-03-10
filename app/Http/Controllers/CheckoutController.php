@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\OrderChanged;
 use App\Mail\AdminMail;
 use App\Models\Orders;
 use App\Models\User;
@@ -64,8 +65,12 @@ class CheckoutController extends Controller
                     'website_token' => $request->website_token,
                 ]);
 
+                $admins = User::where('role', 'admin')->get();
 
-                Mail::to('gamesy865@gmail.com')->send(new AdminMail('New Order Has Been Created', $response->id, $user));
+                foreach ($admins as $admin) {
+                    Mail::to($admin->email)->send(new AdminMail('New Order Has Been Created', $response->id, $user));
+                }
+
 
 
                 return response()->json([

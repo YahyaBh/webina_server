@@ -10,15 +10,15 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class MessageEvent implements ShouldBroadcast
+class OrderChanged implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $message;
+    public $order;
 
-    public function __construct($message)
+    public function __construct($order)
     {
-        $this->message = $message;
+        $this->order = $order;
     }
 
     public function broadcastOn()
@@ -28,6 +28,6 @@ class MessageEvent implements ShouldBroadcast
 
     public function broadcastAs()
     {
-        return 'user-message';
+        return 'orders-changed';
     }
 }
