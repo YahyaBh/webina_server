@@ -80,7 +80,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user', [UserController::class, 'profile'])->name('profile');
     Route::post('/user/update', [UserController::class, 'update'])->name('update');
     Route::post('/user/update/avatar', [UserController::class, 'updateAvatar'])->name('updateAvatar');
-    Route::post('/user/delete', [UserController::class, 'delete'])->name('delete');
 
     Route::post('/chat/message', [ChatController::class, 'sendMessage'])->name('sendMessage');
     Route::post('/chat/messages', [ChatController::class, 'messages'])->name('messages');

@@ -215,7 +215,7 @@ class UserController extends Controller
             if (!$userFNfound) {
                 $user = User::create($postArray);
 
-                $user->update(['disponible' , 'no']);
+                $user->update(['disponible', 'no']);
 
                 $token = $user->createToken($user->email . 'auth_token')->plainTextToken;
 
@@ -249,32 +249,54 @@ class UserController extends Controller
 
         $user = User::where('email', 'bohsineyahya@gmail.com')->first();
 
-
-
-
-        if ($request->name || $request->email || $request->password) {
-            $user->name = $request->input('name');
-            $user->email = $request->input('email');
+        if ($request->password) {
             if (Hash::check($request->password, $user->password)) {
-                $user->password = $request->input(Hash::make('new_password'));
+                $user->update(['password' => $request->new_password]);
+            } else {
+                return response()->json([
+                    'message' => 'Password does not match'
+                ], 401);
             }
-            $user->remember_token = $request->input('remember_token');
-            $user->update([
-                'name' => $request->input('name'),
-                'email' => $request->input('email'),
-                'password' => Hash::make($request->input('new_password')),
-            ]);
-
-            $token = $user->createToken($user->email . 'auth_token')->plainTextToken;
         }
 
+
+        if ($request->name && $request->name != $user->name) {
+
+            if ($request->first_name . $request->last_name !== $user->full_name) {
+                $user->update([
+                    'full_name' => $request->name . ' ' . $request->last_name,
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Please provide a new name'
+                ], 400);
+            }
+        }
+
+        if ($request->email && $request->email != $user->email) {
+            if ($request->email !== $user->email) {
+                $user->update([
+                    'email' => $request->email,
+                    'email_verified_at' => '',
+                ]);
+
+                return response()->json([
+                    'message' => 'Please verify your email'
+                ], 400);
+            } else {
+                return response()->json([
+                    'message' => 'Please provide a new email address'
+                ], 400);
+            }
+        }
 
 
         return response()->json([
             'status' => 'success',
             'message' => 'User updated successfully',
             'user' => $user,
-            'access_token' => $token
         ], 200);
     }
 
@@ -299,14 +321,16 @@ class UserController extends Controller
                     'avatar' => $filename
                 ]);
 
-                $token = $user->createToken($user->email . 'auth_token')->plainTextToken;
-
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Image updated successfully',
                     'user' => $user,
-                    'access_token' => $token
                 ], 200);
+            } else {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Please select an image',
+                ], 401);
             }
         } else {
             return response()->json([
@@ -328,51 +352,29 @@ class UserController extends Controller
     }
 
 
-    public function delete(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password_check' => 'required',
-        ]);
+    // public function delete(Request $request)
+    // {
+    //     $request->validate([
+    //         'email' => 'required|email',
+    //         'password_check' => 'required',
+    //     ]);
 
 
-        $user = User::where('email', $request->email)->first();
+    //     $user = User::where('email', $request->email)->first();
 
 
-        if ($user && Hash::check($request->password_check, $user->password)) {
-            $user->delete();
-            return response()->json([
-                'status' => 'success',
-                'message' => 'User Deleted successfully',
-            ], 200);
-        } else {
-            return response()->json([
-                'status' => 'failed',
-                'message' => 'Password does not match our records',
-            ], 401);
-        }
-    }
+    //     if ($user && Hash::check($request->password_check, $user->password)) {
+    //         $user->delete();
+    //         return response()->json([
+    //             'status' => 'success',
+    //             'message' => 'User Deleted successfully',
+    //         ], 200);
+    //     } else {
+    //         return response()->json([
+    //             'status' => 'failed',
+    //             'message' => 'Password does not match our records',
+    //         ], 401);
+    //     }
+    // }
 
-
-
-    public function checkAdmin(Request $request)
-    {
-
-
-        $request->validate([
-            'email' => 'required|email',
-            'admin_token' => 'required',
-        ]);
-
-
-        $admin = Admin::where('email', $request->email)->first();
-
-        if ($admin->remember_token == $request->admin_token) {
-            return response()->json([], 200);
-        } else {
-            return response()->json([
-                'status' => 'failed',
-            ], 401);
-        }
-    }
 }
