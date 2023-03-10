@@ -217,14 +217,12 @@ class UserController extends Controller
 
                 $user->update(['disponible', 'no']);
 
-                $token = $user->createToken($user->email . 'auth_token')->plainTextToken;
 
 
                 return response()->json([
                     'status' => 'success',
                     'message' => $request->name . 'Registred successfully',
                     'user' => $postArray,
-                    'token' => $token,
                 ]);
             } else {
                 return response()->json([
@@ -247,7 +245,7 @@ class UserController extends Controller
     public function update(Request $request)
     {
 
-        $user = User::where('email', 'bohsineyahya@gmail.com')->first();
+        $user = User::where('email', $request->email)->first();
 
         if ($request->password) {
             if (Hash::check($request->password, $user->password)) {
@@ -275,15 +273,18 @@ class UserController extends Controller
             }
         }
 
-        if ($request->email && $request->email != $user->email) {
-            if ($request->email !== $user->email) {
+        if ($request->new_email && $request->new_email != $user->email) {
+            if ($request->new_email !== $user->email) {
                 $user->update([
-                    'email' => $request->email,
-                    'email_verified_at' => '',
+                    'email' => $request->new_email,
+                    'email_verified_at' => null,
                 ]);
 
+                Mail::to($user->email)->send(new EmailVerification($user, $this->email_verification));
+
                 return response()->json([
-                    'message' => 'Please verify your email'
+                    'message' => 'Please verify your email',
+                    'user' => $user
                 ], 400);
             } else {
                 return response()->json([
