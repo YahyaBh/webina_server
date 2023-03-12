@@ -45,7 +45,7 @@ class AdminMail extends Mailable
     {
         return new Content(
             markdown: 'Emails.newAdminMail',
-            with: ['email' => $this->client->full_name, 'order_number' => $this->order_number],
+            with: ['email' => $this->client->email , 'name' => $this->client->full_name, 'order_number' => $this->order_number],
         );
     }
 

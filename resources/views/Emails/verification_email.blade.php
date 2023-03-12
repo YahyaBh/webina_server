@@ -272,7 +272,8 @@
                                                 line-height: 28px;
                                                 text-decoration: none;
                                                 color : #000;
-                                              ">Verify My
+                                              ">Verify
+                                                                                My
                                                                                 Email</a></span>
                                                                     </div>
                                                                     <!--[if mso]></center></v:textbox></v:roundrect><![endif]-->
