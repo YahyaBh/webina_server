@@ -60,12 +60,14 @@ class WebsitesController extends Controller
 
         $website = Websites::where('token', $token)->first();
 
+        $related_websites = Websites::where('category', $website->category)->get();
 
         try {
 
             return response()->json([
                 'status' => 'success',
-                'website' => $website
+                'website' => $website,
+                'related_websites' => $related_websites
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
