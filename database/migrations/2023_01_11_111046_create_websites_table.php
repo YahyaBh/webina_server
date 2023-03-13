@@ -24,8 +24,9 @@ return new class extends Migration
             $table->integer('old_price');
             $table->integer('stars')->nullable();
             $table->string('developing_Time')->default('1 to 5 days');
-            $table->string('status')->default('available');
+            $table->enum('status' ,['availabele' , 'unavailable'])->default('available');
             $table->string('specifications')->nullable();
+            $table->string('theme_document')->nullable();
             $table->timestamps();
         });
     }

@@ -25,7 +25,7 @@ class OrdersController extends Controller
         if ($user) {
 
 
-            $orders = Orders::where('user_id', $user->id)->get();
+            $orders = Orders::where('user_id', $user->id)->orderBy('created_at' , 'desc')->get();
 
             return response()->json([
                 'status' => 'success',

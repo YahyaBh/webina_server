@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 class AdminDashboardController extends Controller
 {
 
+    public $order_number;
+    public $user_number;
 
     public function __construct()
     {
@@ -25,11 +27,11 @@ class AdminDashboardController extends Controller
             'type' => 'required',
         ]);
 
-        $users = User::all();
-        $websites = Websites::all();
+        $users = User::orderBy('created_at', 'desc')->get();
+        $websites = Websites::orderBy('created_at', 'desc')->get();
 
         if ($request->type == 'all') {
-            $orders =  Orders::all();
+            $orders =  Orders::orderBy('created_at', 'desc')->get();
 
             return response()->json([
                 'message' => 'Success',
@@ -39,7 +41,7 @@ class AdminDashboardController extends Controller
                 'request' => $request->type
             ], 200);
         } else {
-            $orders = Orders::where('status', $request->type)->get();
+            $orders = Orders::where('status', $request->type)->orderBy('created_at', 'desc')->get();
             return response()->json([
                 'message' => 'Success',
                 'orders' => $orders,
@@ -94,29 +96,27 @@ class AdminDashboardController extends Controller
         }
     }
 
-    public $order_number;
-    public $user_number;
 
 
     public function index()
     {
 
-        $users = User::all();
-        $orders = Orders::all();
+        $users = User::orderBy('created_at', 'desc')->get();
+        $orders = Orders::orderBy('created_at', 'desc')->get();
 
-        $users_array = Analyzer::where('data_name', 'Users')->get();
-        $orders_array = Analyzer::where('data_name', 'Orders')->get();
+        $users_array = Analyzer::where('data_name', 'Users')->orderBy('created_at', 'desc')->get();
+        $orders_array = Analyzer::where('data_name', 'Orders')->orderBy('created_at', 'desc')->get();
 
 
         $canceled_orders = Orders::where('status', 'canceled')->count();
         $pending_orders = Orders::where('status', 'pending')->count();
 
-        $recenetly_orders = Orders::orderBy('created_at', 'desc')->limit('5')->get();
-        $recenetly_users = User::orderBy('created_at', 'desc')->limit('5')->get();
+        $recenetly_orders = Orders::orderBy('created_at', 'desc')->orderBy('created_at', 'desc')->limit('5')->get();
+        $recenetly_users = User::orderBy('created_at', 'desc')->orderBy('created_at', 'desc')->limit('5')->get();
 
 
-        $var_orders = Analyzer::where('data_name', 'orders_total')->get();
-        $var_users = Analyzer::where('data_name', 'users_total')->get();
+        $var_orders = Analyzer::where('data_name', 'orders_total')->orderBy('created_at', 'desc')->get();
+        $var_users = Analyzer::where('data_name', 'users_total')->orderBy('created_at', 'desc')->get();
 
 
         foreach ($users as $user_for) {
@@ -217,7 +217,7 @@ class AdminDashboardController extends Controller
         ]);
 
 
-        $websites = Websites::all();
+        $websites = Websites::orderBy('created_at', 'desc')->get();
         if ($request->type == 'all') {
 
             $users = User::all();
@@ -228,12 +228,60 @@ class AdminDashboardController extends Controller
                 'users' => $users
             ], 200);
         } else {
-            $websites = $websites->where('type', $request->type);
+            $websites = $websites->where('type', $request->type)->orderBy('created_at', 'desc')->get();
 
             return response()->json([
                 'message' => 'Success',
                 'websites' => $websites
             ], 200);
+        }
+    }
+
+    public function website_create(Request $request)
+    {
+        $data = $request->validate([
+            'website_name' => 'required|unique:websites,website_name',
+            'price' => 'required',
+            'image' => 'required|file',
+            'description' => 'required',
+            'category' => 'required',
+            'old_price' => 'required',
+            'stars' => 'required',
+            'developing_Time' => 'required',
+            'speceifications' => 'required',
+            'theme_document' => 'required',
+        ]);
+
+
+        try {
+            $image = $request->file('image');
+            $filename = time() . '.' . $image->getClientOriginalExtension();
+            $image->move('uploads/websites/images', $filename);
+
+            $doc = $request->file('theme_document');
+            $filenameDoc = time() . '.' . $doc->getClientOriginalExtension();
+            $doc->move('uploads/websites/themes', $filenameDoc);
+
+            Websites::create([
+                'image' => $filename,
+                'price' => $data['price'],
+                'website_name' => $data['website_name'],
+                'description' => $data['description'],
+                'old_price' => $data['old_price'],
+                'category' => $data['category'],
+                'stars' => $data['stars'],
+                'developing_Time' => $data['developing_Time'],
+                'specifications' => $data['speceifications'],
+                'theme_document' => $filenameDoc,
+            ]);
+
+            return response()->json([
+                'message' => 'Website created successfully',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ],404);
         }
     }
 }

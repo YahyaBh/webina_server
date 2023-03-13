@@ -504,7 +504,7 @@
                                                                     style="padding:0;Margin:0;padding-top:30px">
                                                                     <span class="msohide es-button-border"
                                                                         style="border-style:solid;border-color:#2CB543;background:#fee662;border-width:0px;display:inline-block;border-radius:0px;width:auto;mso-hide:all"><a
-                                                                            href="http://localhost:3000/admin/order/{{ $order->order_number }}">
+                                                                            href="http://localhost:3000/admin/order/{{ $order_number }}">
                                                                             class="es-button" target="_blank"
                                                                             style="mso-style-priority:100 !important;text-decoration:none;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;color:#000000;font-size:18px;display:inline-block;background:#fee662;border-radius:0px;font-family:Sora, Arial, sans-serif;font-weight:normal;font-style:normal;line-height:22px;width:auto;text-align:center;padding:10px 20px 10px 20px;border-color:#fee662">Check
                                                                             Order</a></span>
