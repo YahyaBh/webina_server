@@ -71,10 +71,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/website/{token}', [WebsitesController::class, 'show'])->name('delete');
 
     Route::post('/orders', [OrdersController::class, 'orders_all'])->name('orders');
-    Route::post('/orders/create', [OrdersController::class, 'create_order'])->name('create_order');
     Route::post('/order', [OrdersController::class, 'order_show'])->name('show_order');
 
     Route::post('/checkout', [CheckoutController::class, 'paymecntCheck'])->name('checkout');
+    Route::post('/checkout/paypal', [CheckoutController::class, 'paypalcheckout'])->name('checkout.paypalcheckout');
+
 
 
     Route::post('/user', [UserController::class, 'profile'])->name('profile');

@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Validator;
 use Stripe\Exception\CardException;
 use Stripe\StripeClient;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Srmklive\PayPal\Services\ExpressCheckout;
 
 class CheckoutController extends Controller
 {
@@ -93,5 +94,58 @@ class CheckoutController extends Controller
                 'cancel_url' => 'http://localhost:3000/payment/failed',
             ], 400);
         }
+    }
+
+
+    public function paypalcheckout(Request $request)
+    {
+
+        $request->validate([
+            'website_name' => 'required',
+            'price' => 'required',
+            'description' => 'required',
+            'website_token' => 'required',
+        ]);
+
+        $data = [];
+        $data['items'] = [
+            [
+                'name' => $request->website_name,
+                'price' => $request->price,
+                'description' => $request->description,
+
+            ]
+        ];
+
+        $data['invoice_id'] = $request->website_token;
+        $data['return_url'] = 'http://localhost:3000/payment/success';
+        $data['cancel_return_url'] = 'http://localhost:3000/payment/failed';
+
+        $data['total'] = $request->price;
+
+        $provider = new ExpressCheckout;
+
+        $response = $provider->setExpressCheckout($data);
+
+        $response = $provider->setExpressCheckout($data, true);
+
+
+        return response()->json([
+            'paypal_link' => $response['paypal_link'],
+            'message' => $response['message'],
+        ], 200);
+    }
+
+
+    public function success(Request $request)
+    {
+        $provider = new ExpressCheckout;
+        $response = $provider->getExpressCheckoutDetails($request->token);
+
+        if (in_array(strtoupper($response['ACK']), ['SUCCESS', 'SUCCESSWITHWARNING'])) {
+            dd('Your payment was successfully.');
+        }
+
+        dd('Please try again later.');
     }
 }
