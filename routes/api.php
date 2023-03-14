@@ -12,12 +12,13 @@ use App\Http\Controllers\Admin\AdminChatController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminOrdersController;
 use App\Http\Controllers\ChatController;
+use App\Models\WebSiteStatus;
 use Illuminate\Support\Facades\Route;
 
 
 
 
-
+Route::post('/websites/status' , [WebSiteStatusController::class, 'index'])->name('websites.status');
 Route::get('/homepagetesti', [MainController::class, 'getTestimonialsFounders'])->name('home');
 Route::get('/blogs', [MainController::class, 'getBlogs'])->name('blogs');
 Route::get('/websites', [WebsitesController::class, 'index'])->name('websites_home');
@@ -62,6 +63,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/admin/order/status', [AdminDashboardController::class, 'setOrderStatus'])->name('admin.order.status');
 
         Route::post('/admin/websites', [AdminDashboardController::class, 'website_index'])->name('admin.websites');
+
+        Route::post('/websites/status/set' , [WebSiteStatusController::class, 'setStatus'])->name('websites.status.set');
 
         // Route::post('/admin/order/confirmation', [AdminOrdersController::class, 'order_status'])->name('admin.order.confirmation');
     });
