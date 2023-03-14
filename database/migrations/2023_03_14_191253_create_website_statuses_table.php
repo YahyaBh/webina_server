@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('web_site_statuses', function (Blueprint $table) {
-            $table->enum('status' , ['active', 'inactive'])->default('active');;
-            $table->timestamps();
+        Schema::create('website_statuses', function (Blueprint $table) {
+            $table->id();
+            $table->enum('status', ['active', 'inactive']);
         });
     }
 
@@ -22,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('web_site_statuses');
+        Schema::dropIfExists('website_statuses');
     }
 };

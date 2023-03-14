@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\WebSiteStatus;
-use Illuminate\Http\Request;
+use App\Models\Website_status;
 
 class WebSiteStatusController extends Controller
 {
@@ -13,9 +12,7 @@ class WebSiteStatusController extends Controller
 
     public function index()
     {
-
-        $status = WebSiteStatus::et('status')->first();
-
+        $status = Website_status::first();
 
         return response()->json([
             'status' => $status->status
@@ -25,7 +22,7 @@ class WebSiteStatusController extends Controller
     public function setStatus()
     {
 
-        $status = WebSiteStatus::get()->first();
+        $status = Website_status::get()->first();
 
 
         if ($status->status === 'active') {
