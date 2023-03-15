@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->string('website_name');
             $table->string('description')->nullable();
+            $table->string('website_url')->nullable();
+            $table->string('website_tags')->nullable();
+            $table->string('design')->nullable();
             $table->string('token', 64)->unique()->default('0000-0000-0000-0000-0000');
             $table->string('category')->nullable();
             $table->integer('price');
