@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('website_statuses', function (Blueprint $table) {
             $table->id();
-            $table->enum('status', ['active', 'inactive']);
+            $table->enum('status', ['active', 'inactive'])->default('active');
         });
     }
 

@@ -245,54 +245,39 @@ class UserController extends Controller
     public function update(Request $request)
     {
 
+        $request->validate([
+            'email' => 'required',
+        ]);
+
         $user = User::where('email', $request->email)->first();
 
-        if ($request->password) {
-            if (Hash::check($request->password, $user->password)) {
-                $user->update(['password' => $request->new_password]);
-            } else {
-                return response()->json([
-                    'message' => 'Password does not match'
-                ], 401);
-            }
+
+        if ($request->first_name && $request->first_name . $request->last_name !== $user->full_name) {
+            $user->update([
+                'full_name' => ($request->first_name ? $request->first_name : $user->first_name) . ' ' . ($request->last_name ? $request->last_name : $user->last_name),
+                'first_name' => $request->first_name ? $request->first_name : $user->first_name,
+                'last_name' => $request->last_name ? $request->last_name : $user->last_name
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Please provide a new name'
+            ], 400);
         }
 
 
-        if ($request->name && $request->name != $user->name) {
+        if ($request->new_email) {
 
-            if ($request->first_name . $request->last_name !== $user->full_name) {
-                $user->update([
-                    'full_name' => $request->name . ' ' . $request->last_name,
-                    'first_name' => $request->first_name,
-                    'last_name' => $request->last_name
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'Please provide a new name'
-                ], 400);
-            }
+            $user->update([
+                'email' => $request->new_email,
+                'email_verified_at' => null,
+            ]);
+
+            Mail::to($user->email)->send(new EmailVerification($user, $this->email_verification));
         }
 
-        if ($request->new_email && $request->new_email != $user->email) {
-            if ($request->new_email !== $user->email) {
-                $user->update([
-                    'email' => $request->new_email,
-                    'email_verified_at' => null,
-                ]);
-
-                Mail::to($user->email)->send(new EmailVerification($user, $this->email_verification));
-
-                return response()->json([
-                    'message' => 'Please verify your email',
-                    'user' => $user
-                ], 400);
-            } else {
-                return response()->json([
-                    'message' => 'Please provide a new email address'
-                ], 400);
-            }
-        }
-
+        $user->update([
+            'phone' => $request->phone === $user->phone ? $user->phone : $request->phone,
+        ]);
 
         return response()->json([
             'status' => 'success',
@@ -341,7 +326,7 @@ class UserController extends Controller
         }
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
         try {
             Auth::logout();
@@ -351,31 +336,4 @@ class UserController extends Controller
             return response()->json(['status' => 'failed', 'message' => $e->getMessage()], 401);
         }
     }
-
-
-    // public function delete(Request $request)
-    // {
-    //     $request->validate([
-    //         'email' => 'required|email',
-    //         'password_check' => 'required',
-    //     ]);
-
-
-    //     $user = User::where('email', $request->email)->first();
-
-
-    //     if ($user && Hash::check($request->password_check, $user->password)) {
-    //         $user->delete();
-    //         return response()->json([
-    //             'status' => 'success',
-    //             'message' => 'User Deleted successfully',
-    //         ], 200);
-    //     } else {
-    //         return response()->json([
-    //             'status' => 'failed',
-    //             'message' => 'Password does not match our records',
-    //         ], 401);
-    //     }
-    // }
-
 }
