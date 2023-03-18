@@ -114,14 +114,14 @@ class ChatController extends Controller
 
 
 
-    public function messages(Request $request)
+    public function messages()
     {
 
         $user = User::where('id', Auth::user()->id)->first();
 
         if ($user) {
 
-            $messages = Message::where('reciever_id', $user->id)->orWhere('sender_id', $user->id)->get();
+            $messages = Message::find($user->id)->get();
 
 
             return response()->json(['messages' => $messages], 200);

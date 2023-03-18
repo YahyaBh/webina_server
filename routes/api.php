@@ -48,9 +48,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('admin')->group(function () {
 
-        Route::post('/websites/create', [WebsitesController::class, 'store'])->name('create');
-        Route::post('/websites/update', [WebsitesController::class, 'update'])->name('update.website');
-        Route::post('/websites/delete', [WebsitesController::class, 'delete'])->name('delete.website');
+        Route::post('/admin/website/create', [WebsitesController::class, 'store'])->name('create');
+        Route::post('/admin/website/update', [WebsitesController::class, 'update'])->name('update.website');
+        Route::post('/admin/website/delete', [WebsitesController::class, 'delete'])->name('delete.website');
 
         Route::post('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
@@ -65,7 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/admin/websites', [AdminDashboardController::class, 'website_index'])->name('admin.websites');
 
-        Route::post('/website/status/set' , [WebSiteStatusController::class, 'setStatus'])->name('websites.status.set');
+        Route::post('/admin/website/status/set' , [WebSiteStatusController::class, 'setStatus'])->name('websites.status.set');
 
         // Route::post('/admin/order/confirmation', [AdminOrdersController::class, 'order_status'])->name('admin.order.confirmation');
     });
@@ -73,6 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/profile', [UserController::class, 'profile'])->name('profile');
 
     Route::get('/website/{token}', [WebsitesController::class, 'show'])->name('delete');
+    Route::post('/websites/download' , [WebsitesController::class, 'download_website'])->name('download');
 
     Route::post('/orders', [OrdersController::class, 'orders_all'])->name('orders');
     Route::post('/order', [OrdersController::class, 'order_show'])->name('show_order');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Websites;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -17,6 +18,18 @@ class WebsitesController extends Controller
     public function __construct()
     {
         $this->website_token = uniqid(base64_encode(Str::random(20)));
+    }
+
+
+    public function download_website(Request $request)
+    {
+        $request->validate([
+            'pdf_theme_name' => 'required',
+        ]);
+
+        $file = public_path() . "/uploads/websites/themes/$request->pdf_theme_name";
+
+        return response()->download($file);
     }
 
 
@@ -79,25 +92,49 @@ class WebsitesController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'website_name' => 'required',
+            'price' => 'required',
+            'description' => 'required',
+            'category' => 'required',
+            'Developing_Time' => 'required',
+            'image' => 'required|image',
+            'stars' => 'required',
+            'theme' => 'required',
+            'specifications' => 'required',
+            'website_old_price' => 'required'
+        ]);
 
         try {
 
+            $image = $request->file('image');
+            $filename = time() . '.' . $image->getClientOriginalExtension();
+            $image->move('uploads/websites/', $filename);
+
+            $theme = $request->file('theme');
+            $themeName = time() . '.' . $theme->getClientOriginalExtension();
+            $theme->move('uploads/websites/themes', $themeName);
+
             Websites::create([
+                'image' => $filename,
                 'website_name' => $request->website_name,
+                'description' => $request->description,
                 'price' => $request->price,
+                'old_price' => $request->old_price,
                 'category' => $request->category,
-                'Developing_time' => $request->Developing_time,
-                'image' => $request->image,
-                'token' => $this->website_token
+                'developing_Time' => $request->Developing_Time,
+                'stars' => $request->stars,
+                'theme_document' => $themeName,
+                'token' => $this->website_token,
+                'specifications' => $request->specifications
             ]);
 
             return response()->json([
                 'message' => 'Product Created Successfully!!'
             ]);
         } catch (\Exception $e) {
-            Log::error($e->getMessage());
             return response()->json([
-                'message' => 'Something goes wrong while creating a product!!' . $e
+                'message' => 'Something goes wrong while creating a product!!' . $e->getMessage()
             ], 500);
         }
     }
