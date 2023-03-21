@@ -1,0 +1,21 @@
+#interVeil{
+	position:fixed;
+	background: #2c3e52;
+	height: 100% !important;
+	width:100% !important;
+	left:0;
+	top:0;
+	z-index:500;
+	visibility:hidden;
+	filter:progid:DXImageTransform.Microsoft.alpha(opacity=80);
+	opacity:.8;
+}
+
+#interVeil:after {
+	content: '\0020';
+	display: block;
+	overflow: hidden;
+	visibility: hidden;
+	width: 0;
+	height: 0;
+}

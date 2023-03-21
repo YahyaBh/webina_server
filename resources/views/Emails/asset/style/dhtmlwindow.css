@@ -1,0 +1,11 @@
+.dhtmlwindow{position:absolute;visibility:hidden;background-color:#4D82B1;z-index:450; overflow: hidden;}
+.drag-handle{cursor:move;overflow:hidden;width:auto;filter:progid:DXImageTransform.Microsoft.alpha(opacity=100);-moz-opacity:1;opacity:1;}
+.drag-handle .drag-controls{position:absolute;right:1px;top:2px;cursor:hand;cursor:pointer;}
+* html .drag-handle{width:100%;}
+.drag-contentarea{overflow:auto;background: #4d82b3 url(https://clt1554694.bmeurl.co/images/misc/viewimage-bg3.png)center top repeat-x;}
+#copy.dhtmlwindow .drag-contentarea, #delete.dhtmlwindow .drag-contentarea, #Feedback.dhtmlwindow .drag-contentarea {
+	overflow:auto;background: #4d82b3 url(https://clt1554694.bmeurl.co/images/misc/viewimage-bg3.png)center top repeat-x;
+}
+.drag-statusarea{border-top:1px solid gray;background-color:#f8f8f8;height:13px;}
+.drag-resizearea{float:right;width:13px;height:13px;cursor:nw-resize;font-size:0;}
+

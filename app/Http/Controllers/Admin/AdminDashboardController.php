@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Events\OrderChanged;
 use App\Http\Controllers\Controller;
+use App\Mail\NewsLetter;
 use App\Models\Analyzer;
 use App\Models\Orders;
 use App\Models\User;
 use App\Models\Websites;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class AdminDashboardController extends Controller
 {
@@ -281,7 +283,37 @@ class AdminDashboardController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
-            ],404);
+            ], 404);
         }
+    }
+
+
+
+
+    public function news_letter(Request $request)
+    {
+        $request->validate([
+            'title' => 'required',
+            'subject' => 'required',
+            'content' => 'required',
+            'image' => 'required|image',
+        ]);
+
+
+        $users = User::all();
+
+        $image = $request->file('image');
+        $filename = time() . '.' . $image->getClientOriginalExtension();
+        $image->move('uploads/newsletter/images', $filename);
+
+        foreach ($users as $user) {
+
+            Mail::to($user->email)->send(new NewsLetter($user->first_name, $request->title, $request->subject,$request->content, $filename));
+        }
+
+
+        return response()->json([
+            'message' => 'Newsletter created successfully',
+        ], 200);
     }
 }
