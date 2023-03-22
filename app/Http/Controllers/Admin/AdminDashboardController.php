@@ -6,6 +6,8 @@ use App\Events\OrderChanged;
 use App\Http\Controllers\Controller;
 use App\Mail\NewsLetter;
 use App\Models\Analyzer;
+use App\Models\Blogs;
+use App\Models\Contact;
 use App\Models\Orders;
 use App\Models\User;
 use App\Models\Websites;
@@ -308,12 +310,81 @@ class AdminDashboardController extends Controller
 
         foreach ($users as $user) {
 
-            Mail::to($user->email)->send(new NewsLetter($user->first_name, $request->title, $request->subject,$request->content, $filename));
+            Mail::to($user->email)->send(new NewsLetter($user->first_name, $request->title, $request->subject, $request->content, $filename));
         }
 
 
         return response()->json([
             'message' => 'Newsletter created successfully',
         ], 200);
+    }
+
+
+
+    public function blogs_index()
+    {
+        try {
+            $blogs = Blogs::orderBy('created_at', 'desc')->get();
+
+
+
+            return response()->json([
+                'message' => 'Success',
+                'blogs' => $blogs
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 404);
+        }
+    }
+
+    public function blogs_create(Request $request)
+    {
+        $request->validate([
+            'title' => 'required',
+            'description' => 'required',
+            'image' => 'required|image',
+        ]);
+
+        try {
+            $image = $request->file('image');
+            $fileName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move('uploads/blogs/images', $fileName);
+
+
+            Blogs::create([
+                'title' => $request->title,
+                'body' => $request->description,
+                'image' => $fileName,
+            ]);
+
+            return response()->json([
+                'message' => 'Success',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 404);
+        }
+    }
+
+
+    public function contact_index()
+    {
+        try {
+            $contacts = Contact::orderBy('created_at', 'desc')->get();
+
+
+
+            return response()->json([
+                'message' => 'Success',
+                'contacts' => $contacts
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 404);
+        }
     }
 }

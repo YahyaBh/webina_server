@@ -70,6 +70,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/admin/newsletter', [AdminDashboardController::class,'news_letter'])->name('news_letter');
 
+        Route::get('/admin/blogs', [AdminDashboardController::class,'blogs_index'])->name('blogs');
+        Route::post('/admin/blogs/create', [AdminDashboardController::class,'blogs_create'])->name('blogs_create');
+
+
+        Route::get('/api/admin/contact' , [AdminDashboardController::class , 'contact_index'])->name('contact');
+
         // Route::post('/admin/order/confirmation', [AdminOrdersController::class, 'order_status'])->name('admin.order.confirmation');
     });
 

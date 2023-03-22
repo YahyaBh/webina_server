@@ -17,9 +17,11 @@ class ContactController extends Controller
             ]);
 
 
-            $postArray = $request->all();
-
-            Contact::create($postArray);
+            Contact::create([
+                'email' => $request->email,
+                'name' => $request->name,
+                'message' => $request->message,
+            ]);
 
 
             return response()->json([
@@ -29,7 +31,7 @@ class ContactController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'failed',
-                'message' => 'Failed With : ' . $e,
+                'message' => 'Failed With : ' . $e->getMessage(),
             ], 401);
         }
     }
