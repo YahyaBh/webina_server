@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Reviews;
 use App\Models\Websites;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -75,12 +76,15 @@ class WebsitesController extends Controller
 
         $related_websites = Websites::where('category', $website->category)->get();
 
+        $reviews = Reviews::where('website_token', $website->token)->get();
+
         try {
 
             return response()->json([
                 'status' => 'success',
                 'website' => $website,
-                'related_websites' => $related_websites
+                'related_websites' => $related_websites,
+                'reviews' => $reviews
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
