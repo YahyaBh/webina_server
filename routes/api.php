@@ -90,6 +90,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'paymecntCheck'])->name('checkout');
     Route::post('/checkout/paypal', [CheckoutController::class, 'paypalcheckout'])->name('checkout.paypalcheckout');
 
+    Route::post('/checkout/cash' , [CheckoutController::class, 'cashCheckout'])->name('cash.checkout');
+    Route::post('/payment/westmoney' , [CheckoutController::class, 'cashCheckoutCheck'])->name('cash.checkout.check');
 
 
     Route::post('/user', [UserController::class, 'profile'])->name('profile');

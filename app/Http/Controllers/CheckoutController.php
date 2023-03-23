@@ -2,23 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\OrderChanged;
 use App\Mail\AdminMail;
 use App\Models\Orders;
+use App\Models\Payment;
 use App\Models\User;
 use App\Models\Websites;
-use Exception;
-use Faker\Provider\uk_UA\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
-use Stripe\Exception\CardException;
-use Stripe\StripeClient;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Srmklive\PayPal\Services\ExpressCheckout;
+use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
+
+
+    public $westernunion = 10;
+    public $moneygram = 10;
+
+
+    private $payment_token;
+
+    public function __construct()
+    {
+        $this->payment_token = uniqid(base64_encode(Str::random(40)));
+    }
+
     public function paymecntCheck(Request $request)
     {
 
@@ -147,5 +155,61 @@ class CheckoutController extends Controller
         }
 
         dd('Please try again later.');
+    }
+
+
+    public function cashCheckout(Request $request)
+    {
+
+        $request->validate([
+            'website_token' => 'required',
+            'method' => 'required',
+            'full_name' => 'required',
+            'city' => 'required',
+            'country' => 'required',
+            'postal_code' => 'required',
+            'phone' => 'required',
+        ]);
+
+
+
+        $website = Websites::where('token', $request->website_token);
+
+        if ($website) {
+
+            $payment = Payment::create([
+                'payment_token' => $this->payment_token,
+                'website_token' => $website->token,
+                'website_name' => $website->website_name,
+                'user_id' => auth()->user()->id,
+                'user_full_name' => $request->full_name,
+                'user_email' => $request->email,
+                'user_country' => $request->country,
+                'user_city' => $request->city,
+                'user_postal_code' => $request->postal_code,
+                'user_phone' => $request->phone,
+                'amount' => $website->price + $request->method === 'westernunion' ? $this->westernunion : $this->moneygram,
+                'method' => $request->method === 'westernunion' ? 'westernunion' : 'moneygram',
+            ]);
+
+            $admins = User::where('role', 'admin')->get();
+            $user = User::where('id', auth()->user()->id)->first();
+
+            foreach ($admins as $admin) {
+                Mail::to($admin->email)->send(new AdminMail('New Order Has Been Created', auth()->user()->id, $user));
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'payment_token' => $payment->payment_token,
+                'message' => 'Payment successfully created, please send the specified amount to this credintals!',
+            ], 200);
+        } else {
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Website not found',
+            ], 400);
+        }
     }
 }
