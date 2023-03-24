@@ -13,5 +13,5 @@ class Discount extends Model
 
 
 
-    protected $fillable = ['amount', 'holder', 'end_date', 'available'];
+    protected $fillable = ['token', 'amount', 'holder', 'end_data', 'available'];
 }

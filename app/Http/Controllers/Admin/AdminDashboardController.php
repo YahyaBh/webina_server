@@ -424,7 +424,7 @@ class AdminDashboardController extends Controller
         try {
             Discount::create([
                 'amount' => $request->input('amount'),
-                'endDate' => $request->input('endDate'),
+                'end_data' => $request->input('endDate'),
                 'holder' => $request->input('holder'),
                 'token' => $this->discount_token
             ]);

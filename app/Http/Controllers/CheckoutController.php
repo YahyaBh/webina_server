@@ -224,8 +224,7 @@ class CheckoutController extends Controller
             'discount' => 'required'
         ]);
 
-
-        $discount = Discount::where('code', $request->discount)->first();
+        $discount = Discount::where('token', $request->discount)->first();
 
         if ($discount) {
             return response()->json([
