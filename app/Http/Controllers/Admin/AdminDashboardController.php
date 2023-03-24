@@ -8,11 +8,13 @@ use App\Mail\NewsLetter;
 use App\Models\Analyzer;
 use App\Models\Blogs;
 use App\Models\Contact;
+use App\Models\Discount;
 use App\Models\Orders;
 use App\Models\User;
 use App\Models\Websites;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class AdminDashboardController extends Controller
 {
@@ -20,8 +22,12 @@ class AdminDashboardController extends Controller
     public $order_number;
     public $user_number;
 
+
+    public $discount_token;
+
     public function __construct()
     {
+        $this->discount_token = Str::random(10);
     }
 
     public function getOrders(Request $request)
@@ -380,6 +386,51 @@ class AdminDashboardController extends Controller
             return response()->json([
                 'message' => 'Success',
                 'contacts' => $contacts
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 404);
+        }
+    }
+
+    public function discount_index()
+    {
+
+        try {
+            $discounts = Discount::orderBy('created_at', 'desc')->get();
+
+            return response()->json([
+                'message' => 'Success',
+                'discounts' => $discounts
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 404);
+        }
+    }
+
+    public function discount_create(Request $request)
+    {
+
+        $request->validate([
+            'amount' => 'required',
+            'endDate' => 'required',
+            'holder' => 'required'
+        ]);
+
+
+        try {
+            Discount::create([
+                'amount' => $request->input('amount'),
+                'endDate' => $request->input('endDate'),
+                'holder' => $request->input('holder'),
+                'token' => $this->discount_token
+            ]);
+
+            return response()->json([
+                'message' => 'Discount created successfully',
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('discounts', function (Blueprint $table) {
             $table->id();
+            $table->string('token')->unique();
             $table->integer('amount');
             $table->string('holder');
             $table->date('end_data');

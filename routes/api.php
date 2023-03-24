@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::get('/website/status' , [WebSiteStatusController::class, 'index'])->name('websites.status');
+Route::get('/website/status', [WebSiteStatusController::class, 'index'])->name('websites.status');
 Route::get('/testimonials', [MainController::class, 'getTestimonialsFounders'])->name('home');
 Route::get('/blogs', [MainController::class, 'getBlogs'])->name('blogs');
 Route::get('/websites', [WebsitesController::class, 'index'])->name('websites_home');
@@ -65,16 +65,19 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/admin/websites', [AdminDashboardController::class, 'website_index'])->name('admin.websites');
 
-        Route::post('/admin/website/status/set' , [WebSiteStatusController::class, 'setStatus'])->name('websites.status.set');
+        Route::post('/admin/website/status/set', [WebSiteStatusController::class, 'setStatus'])->name('websites.status.set');
 
 
-        Route::post('/admin/newsletter', [AdminDashboardController::class,'news_letter'])->name('news_letter');
+        Route::post('/admin/newsletter', [AdminDashboardController::class, 'news_letter'])->name('news_letter');
 
-        Route::get('/admin/blogs', [AdminDashboardController::class,'blogs_index'])->name('blogs');
-        Route::post('/admin/blogs/create', [AdminDashboardController::class,'blogs_create'])->name('blogs_create');
+        Route::get('/admin/blogs', [AdminDashboardController::class, 'blogs_index'])->name('blogs');
+        Route::post('/admin/blogs/create', [AdminDashboardController::class, 'blogs_create'])->name('blogs_create');
 
 
-        Route::get('/api/admin/contact' , [AdminDashboardController::class , 'contact_index'])->name('contact');
+        Route::get('/admin/contact', [AdminDashboardController::class, 'contact_index'])->name('contact');
+
+        Route::get('/discounts', [AdminDashboardController::class, 'discount_index'])->name('discounts');
+        Route::post('/discount', [AdminDashboardController::class, 'discount_create'])->name('discount_create');
 
         // Route::post('/admin/order/confirmation', [AdminOrdersController::class, 'order_status'])->name('admin.order.confirmation');
     });
@@ -82,7 +85,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/profile', [UserController::class, 'profile'])->name('profile');
 
     Route::get('/website/{token}', [WebsitesController::class, 'show'])->name('delete');
-    Route::post('/websites/download' , [WebsitesController::class, 'download_website'])->name('download');
+    Route::post('/websites/download', [WebsitesController::class, 'download_website'])->name('download');
 
     Route::post('/orders', [OrdersController::class, 'orders_all'])->name('orders');
     Route::post('/order', [OrdersController::class, 'order_show'])->name('show_order');
@@ -90,15 +93,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'paymecntCheck'])->name('checkout');
     Route::post('/checkout/paypal', [CheckoutController::class, 'paypalcheckout'])->name('checkout.paypalcheckout');
 
-    Route::post('/checkout/cash' , [CheckoutController::class, 'cashCheckout'])->name('cash.checkout');
-    Route::post('/payment/westmoney' , [CheckoutController::class, 'cashCheckoutCheck'])->name('cash.checkout.check');
+    Route::post('/checkout/cash', [CheckoutController::class, 'cashCheckout'])->name('cash.checkout');
+    Route::post('/payment/westmoney', [CheckoutController::class, 'cashCheckoutCheck'])->name('cash.checkout.check');
 
-    Route::post('/checkout/discount' , [CheckoutController::class, 'discountCheck'])->name('discount_check');
+    Route::post('/checkout/discount', [CheckoutController::class, 'discountCheck'])->name('discount_check');
 
     Route::post('/user', [UserController::class, 'profile'])->name('profile');
     Route::post('/user/update', [UserController::class, 'update'])->name('update');
     Route::post('/user/update/avatar', [UserController::class, 'updateAvatar'])->name('updateAvatar');
-    Route::post('/user/password/update' , [UserController::class , 'passwordUpdate'])->name('updatePassword');
+    Route::post('/user/password/update', [UserController::class, 'passwordUpdate'])->name('updatePassword');
 
     Route::post('/chat/message', [ChatController::class, 'sendMessage'])->name('sendMessage');
     Route::post('/chat/messages', [ChatController::class, 'messages'])->name('messages');
