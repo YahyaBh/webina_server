@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\AdminMail;
+use App\Models\Discount;
 use App\Models\Orders;
 use App\Models\Payment;
 use App\Models\User;
@@ -209,6 +210,32 @@ class CheckoutController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Website not found',
+            ], 400);
+        }
+    }
+
+
+
+
+    public function discountCheck(Request $request)
+    {
+
+        $request->validate([
+            'discount' => 'required'
+        ]);
+
+
+        $discount = Discount::where('code', $request->discount)->first();
+
+        if ($discount) {
+            return response()->json([
+                'status' => 'success',
+                'discount' => $discount,
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Discount not found',
             ], 400);
         }
     }

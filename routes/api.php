@@ -93,6 +93,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/checkout/cash' , [CheckoutController::class, 'cashCheckout'])->name('cash.checkout');
     Route::post('/payment/westmoney' , [CheckoutController::class, 'cashCheckoutCheck'])->name('cash.checkout.check');
 
+    Route::post('/checkout/discount' , [CheckoutController::class, 'discountCheck'])->name('discount_check');
 
     Route::post('/user', [UserController::class, 'profile'])->name('profile');
     Route::post('/user/update', [UserController::class, 'update'])->name('update');
