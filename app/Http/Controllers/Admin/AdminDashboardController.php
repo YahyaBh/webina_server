@@ -114,6 +114,8 @@ class AdminDashboardController extends Controller
         $users = User::orderBy('created_at', 'desc')->get();
         $orders = Orders::orderBy('created_at', 'desc')->get();
 
+        $websites = Websites::orderBy('created_at', 'desc')->get();
+
         $users_array = Analyzer::where('data_name', 'Users')->orderBy('created_at', 'desc')->get();
         $orders_array = Analyzer::where('data_name', 'Orders')->orderBy('created_at', 'desc')->get();
 
@@ -132,10 +134,12 @@ class AdminDashboardController extends Controller
         foreach ($users as $user_for) {
             $order = Orders::where('user_id', $user_for->id)->first();
 
-            if ($order) {
-                $this->order_number++;
-            } else {
-                $this->user_number++;
+            if ($user_for->role !== 'admin') {
+                if ($order) {
+                    $this->order_number++;
+                } else {
+                    $this->user_number++;
+                }
             }
         }
 
@@ -152,6 +156,7 @@ class AdminDashboardController extends Controller
             'pending_orders' => $pending_orders,
             'var_users' => $var_users,
             'var_orders' => $var_orders,
+            'websites' => $websites,
         ], 200);
     }
 

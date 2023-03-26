@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewOrder;
 use App\Mail\AdminMail;
 use App\Models\Discount;
 use App\Models\Orders;
@@ -63,7 +64,7 @@ class CheckoutController extends Controller
                 ]);
 
 
-                Orders::create([
+                $order = Orders::create([
                     'user_id' => $request->user_id,
                     'order_number' => $response->id,
                     'status' => 'pending',
@@ -81,19 +82,17 @@ class CheckoutController extends Controller
                     Mail::to($admin->email)->send(new AdminMail('New Order Has Been Created', $response->id, $user));
                 }
 
-
+                event(new NewOrder($order->order_number));
 
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Payment successfully created , Thank you!',
                     'response' => $response,
-                    'url' => 'http://localhost:3000/payment/success'
                 ], 200);
             } catch (\Exception $e) {
                 return response()->json([
                     'status' => 'error',
                     'message' => $e->getMessage(),
-                    'cancel_url' => 'http://localhost:3000/payment/failed',
                 ], 400);
             }
         } else {
@@ -199,6 +198,8 @@ class CheckoutController extends Controller
             foreach ($admins as $admin) {
                 Mail::to($admin->email)->send(new AdminMail('New Order Has Been Created', auth()->user()->id, $user));
             }
+
+            event(new NewOrder($payment->payment_token));
 
             return response()->json([
                 'status' => 'success',

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewUser;
 use App\Events\NotificationPusher as EventsNotificationPusher;
 use App\Mail\EmailVerification;
 use App\Models\Admin;
@@ -217,7 +218,7 @@ class UserController extends Controller
 
                 $user->update(['disponible', 'no']);
 
-
+                event(new NewUser($user->id));
 
                 return response()->json([
                     'status' => 'success',
