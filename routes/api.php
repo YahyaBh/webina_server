@@ -72,6 +72,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/admin/blogs', [AdminDashboardController::class, 'blogs_index'])->name('blogs');
         Route::post('/admin/blogs/create', [AdminDashboardController::class, 'blogs_create'])->name('blogs_create');
+        Route::post('/admin/blogs/update/{id}', [AdminDashboardController::class , 'blogs_update'])->name('blogs_update');
+        Route::post('/admin/blogs/delete/{id}', [AdminDashboardController::class , 'blogs_delete'])->name('blogs_delete');
 
 
         Route::get('/admin/contact', [AdminDashboardController::class, 'contact_index'])->name('contact');

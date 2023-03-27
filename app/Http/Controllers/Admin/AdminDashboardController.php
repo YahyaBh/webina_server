@@ -380,6 +380,48 @@ class AdminDashboardController extends Controller
         }
     }
 
+    public function blogs_update(Request $request, $id)
+    {
+        try {
+            $blogs = Blogs::find($id);
+
+            // $image = $blogs->image;
+            // $fileName = time() . '.' . $image->getClientOriginalExtension();
+            // $image->move('uploads/blogs/images', $fileName);
+
+            $blogs->update([
+                'title' => $blogs->title,
+                'body' => $blogs->description,
+                // 'image' => $fileName,
+            ]);
+
+            return response()->json([
+                'message' => 'Success',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 404);
+        }
+    }
+
+    public function blogs_delete($id)
+    {
+        try {
+            $blogs = Blogs::find($id);
+
+            $blogs->delete();
+
+            return response()->json([
+                'message' => 'Success',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 404);
+        }
+    }
+
 
     public function contact_index()
     {

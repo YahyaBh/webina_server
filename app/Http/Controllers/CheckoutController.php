@@ -88,11 +88,13 @@ class CheckoutController extends Controller
                     'status' => 'success',
                     'message' => 'Payment successfully created , Thank you!',
                     'response' => $response,
+                    'url' => 'http://localhost:3000/payment/success',
                 ], 200);
             } catch (\Exception $e) {
                 return response()->json([
                     'status' => 'error',
                     'message' => $e->getMessage(),
+                    'url' => 'http://localhost:3000/payment/failed',
                 ], 400);
             }
         } else {
@@ -205,12 +207,14 @@ class CheckoutController extends Controller
                 'status' => 'success',
                 'payment_token' => $payment->payment_token,
                 'message' => 'Payment successfully created, please send the specified amount to this credintals!',
+                'url' => 'http://localhost:3000/payment/success'
             ], 200);
         } else {
 
             return response()->json([
                 'status' => 'error',
                 'message' => 'Website not found',
+                'url' => 'http://localhost:3000/payment/failed'
             ], 400);
         }
     }
