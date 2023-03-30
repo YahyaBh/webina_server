@@ -9,7 +9,7 @@ class Websites extends Model
 {
     use HasFactory;
 
-    protected $fillable  = ['image', 'description', 'stars', 'status', 'theme_document', 'website_name', 'token', 'category', 'price', 'old_price',  'developing_Time', 'specifications'];
+    protected $fillable  = ['image', 'description', 'stars', 'status', 'theme_document',  'category', 'price', 'old_price',  'developing_Time', 'specifications'];
 
 
 
