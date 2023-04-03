@@ -79,6 +79,8 @@ class WebsitesController extends Controller
 
         $reviews = Reviews::where('website_token', $website->token)->get();
 
+        $ratings = Reviews::where('website_token', $website->token)->get(['rating']);
+
         try {
 
             return response()->json([
@@ -86,7 +88,8 @@ class WebsitesController extends Controller
                 'website' => $website,
                 'related_websites' => $related_websites,
                 'reviews' => $reviews,
-                'total_users' => User::all()->count()
+                'total_users' => User::all()->count(),
+                'ratings' => $ratings
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
