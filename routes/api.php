@@ -100,6 +100,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/checkout/discount', [CheckoutController::class, 'discountCheck'])->name('discount_check');
 
+    Route::post('/review/create' , [CheckoutController::class, 'creteReview'])->name('review_create');
+
     Route::post('/user', [UserController::class, 'profile'])->name('profile');
     Route::post('/user/update', [UserController::class, 'update'])->name('update');
     Route::post('/user/update/avatar', [UserController::class, 'updateAvatar'])->name('updateAvatar');
