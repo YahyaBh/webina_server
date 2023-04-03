@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email');
             $table->string('review');
-            $table->integer('rating');
+            $table->integer('rating')->default(5);
             $table->string('website_token');
             $table->timestamps();
         });

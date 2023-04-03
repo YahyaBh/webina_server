@@ -7,8 +7,10 @@ use App\Mail\AdminMail;
 use App\Models\Discount;
 use App\Models\Orders;
 use App\Models\Payment;
+use App\Models\Reviews;
 use App\Models\User;
 use App\Models\Websites;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Srmklive\PayPal\Services\ExpressCheckout;
@@ -88,7 +90,7 @@ class CheckoutController extends Controller
                     'status' => 'success',
                     'message' => 'Payment successfully created , Thank you!',
                     'response' => $response,
-                    'url' => 'http://localhost:3000/payment/success',
+                    'url' => 'http://localhost:3000/payment/success/' . $request->website_token
                 ], 200);
             } catch (\Exception $e) {
                 return response()->json([
@@ -128,7 +130,7 @@ class CheckoutController extends Controller
         ];
 
         $data['invoice_id'] = $request->website_token;
-        $data['return_url'] = 'http://localhost:3000/payment/success';
+        $data['return_url'] = 'http://localhost:3000/payment/success/' . $request->website_token;
         $data['cancel_return_url'] = 'http://localhost:3000/payment/failed';
 
         $data['total'] = $request->price;
@@ -207,7 +209,7 @@ class CheckoutController extends Controller
                 'status' => 'success',
                 'payment_token' => $payment->payment_token,
                 'message' => 'Payment successfully created, please send the specified amount to this credintals!',
-                'url' => 'http://localhost:3000/payment/success'
+                'url' => 'http://localhost:3000/payment/success/' . $website->token
             ], 200);
         } else {
 
@@ -241,6 +243,49 @@ class CheckoutController extends Controller
                 'status' => 'error',
                 'message' => 'Discount not found',
             ], 400);
+        }
+    }
+
+
+    public function creteReview(Request $request)
+    {
+
+        $request->validate([
+            'review' => 'required',
+            'website_token' => 'required'
+        ]);
+
+
+        $website = Websites::where('token', $request->website_token)->first();
+
+        if ($website) {
+
+            try {
+                Reviews::create([
+                    'review' => $request->review,
+                    'website_token' => $website->token,
+                    'email' => auth()->user()->email,
+                    'name' => auth()->user()->full_name,
+                    'user_id' => auth()->user()->id,
+                    'rating' => $request->rating ? $request->rating : 5,
+                ]);
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Review has been created successfully'
+                ], 200);
+
+            } catch (Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage()
+                ], 404);
+            }
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unable To Find Website'
+            ]);
         }
     }
 }

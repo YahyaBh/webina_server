@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Reviews;
+use App\Models\User;
 use App\Models\Websites;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -84,7 +85,8 @@ class WebsitesController extends Controller
                 'status' => 'success',
                 'website' => $website,
                 'related_websites' => $related_websites,
-                'reviews' => $reviews
+                'reviews' => $reviews,
+                'total_users' => User::all()->count()
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
