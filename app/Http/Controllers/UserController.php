@@ -257,7 +257,8 @@ class UserController extends Controller
             $user->update([
                 'full_name' => ($request->first_name ? $request->first_name : $user->first_name) . ' ' . ($request->last_name ? $request->last_name : $user->last_name),
                 'first_name' => $request->first_name ? $request->first_name : $user->first_name,
-                'last_name' => $request->last_name ? $request->last_name : $user->last_name
+                'last_name' => $request->last_name ? $request->last_name : $user->last_name,
+                'phone' => $request->phone,
             ]);
         } else {
             return response()->json([
@@ -271,13 +272,14 @@ class UserController extends Controller
             $user->update([
                 'email' => $request->new_email,
                 'email_verified_at' => null,
+                'phone' => $request->phone,
             ]);
 
             Mail::to($user->email)->send(new EmailVerification($user, $this->email_verification));
         }
 
         $user->update([
-            'phone' => $request->phone === $user->phone ? $user->phone : $request->phone,
+            'phone' => $request->phone,
         ]);
 
         return response()->json([
