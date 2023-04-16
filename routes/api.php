@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/website/status', [WebSiteStatusController::class, 'index'])->name('websites.status');
 Route::get('/testimonials', [MainController::class, 'getTestimonialsFounders'])->name('home');
 Route::get('/blogs', [MainController::class, 'getBlogs'])->name('blogs');
+Route::get('/announcements', [MainController::class, 'getAnnouncements'])->name('announcements');
 Route::get('/websites', [WebsitesController::class, 'index'])->name('websites_home');
 Route::post('/recent/websites', [WebsitesController::class, 'recent_websites'])->name('recent');
 

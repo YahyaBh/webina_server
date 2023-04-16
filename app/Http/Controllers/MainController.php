@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Announcements;
 use App\Models\Blogs;
 use App\Models\Founders;
 use App\Models\Testimonials;
@@ -42,6 +43,20 @@ class MainController extends Controller
             $blogs = Blogs::all();
             return response()->json([
                 'blogs' => $blogs
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getAnnouncements()
+    {
+        try {
+            $announcements = Announcements::all();
+            return response()->json([
+                'announcements' => $announcements
             ], 200);
         } catch (Exception $e) {
             return response()->json([
