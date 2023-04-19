@@ -10,6 +10,7 @@ use App\Models\Blogs;
 use App\Models\Contact;
 use App\Models\Discount;
 use App\Models\Orders;
+use App\Models\Payment;
 use App\Models\User;
 use App\Models\Websites;
 use Illuminate\Http\Request;
@@ -483,6 +484,41 @@ class AdminDashboardController extends Controller
             return response()->json([
                 'message' => $e->getMessage()
             ], 404);
+        }
+    }
+
+
+
+    public function getPayments(Request $request)
+    {
+
+        $request->validate([
+            'type' => 'required',
+        ]);
+
+        $users = User::orderBy('created_at', 'desc')->get();
+        $websites = Websites::orderBy('created_at', 'desc')->get();
+
+        if ($request->type == 'all') {
+            $payments =  Payment::orderBy('created_at', 'desc')->get();
+
+            return response()->json([
+                'message' => 'Success',
+                'payments' => $payments,
+                'users' => $users,
+                'websites' => $websites,
+                'request' => $request->type
+            ], 200);
+        } else {
+            $payments = Payment::where('status', $request->type)->orderBy('created_at', 'desc')->get();
+            return response()->json([
+                'message' => 'Success',
+                'payments' => $payments,
+                'users' => $users,
+                'websites' => $websites,
+                'request' => $request->type
+
+            ], 200);
         }
     }
 }

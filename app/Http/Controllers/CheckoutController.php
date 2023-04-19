@@ -177,7 +177,7 @@ class CheckoutController extends Controller
 
 
 
-        $website = Websites::where('token', $request->website_token);
+        $website = Websites::where('token', $request->website_token)->first();
 
         if ($website) {
 
@@ -192,7 +192,7 @@ class CheckoutController extends Controller
                 'user_city' => $request->city,
                 'user_postal_code' => $request->postal_code,
                 'user_phone' => $request->phone,
-                'amount' => $website->price + $request->method === 'westernunion' ? $this->westernunion : $this->moneygram,
+                'amount' => $website->price + ($request->method === 'westernunion' ? $this->westernunion : $this->moneygram),
                 'method' => $request->method === 'westernunion' ? 'westernunion' : 'moneygram',
             ]);
 

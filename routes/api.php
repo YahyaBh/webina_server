@@ -68,6 +68,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/admin/website/status/set', [WebSiteStatusController::class, 'setStatus'])->name('websites.status.set');
 
+        Route::post('/admin/payments', [AdminDashboardController::class, 'getPayments'])->name('admin.payments');
+
 
         Route::post('/admin/newsletter', [AdminDashboardController::class, 'news_letter'])->name('news_letter');
 
