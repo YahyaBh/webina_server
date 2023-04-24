@@ -9,6 +9,7 @@ use App\Models\Message;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Pusher\Pusher;
 
 class ChatController extends Controller
 {
@@ -65,13 +66,9 @@ class ChatController extends Controller
 
         $message = $request->input('message');
 
-
         if ($messages) {
-
             $admin = User::where('id', $messages->reciever_id)->first();
-
             if ($user && $admin) {
-
                 Message::create([
                     'message' => $message,
                     'sender_id' => Auth::user()->id,
@@ -80,19 +77,31 @@ class ChatController extends Controller
 
                 $messages = Message::all();
 
-                event(new MessageEvent($messages));
+                // Generate a new timestamp
+                $timestamp = time();
 
+                // Trigger a Pusher event with the new timestamp
+                $pusher = new Pusher(
+                    env('PUSHER_APP_KEY'),
+                    env('PUSHER_APP_SECRET'),
+                    env('PUSHER_APP_ID'),
+                    [
+                        'cluster' => env('PUSHER_APP_CLUSTER'),
+                        'useTLS' => true
+                    ]
+                );
+                $pusher->trigger('my-channel', 'my-event', [
+                    'message' => $message,
+                    'timestamp' => $timestamp,
+                ]);
 
                 return response()->json(['message' => $message], 200);
             } else {
                 return response()->json(['message' => 'Unauthorized User'], 401);
             }
         } else {
-
             $admin = User::where([['role', 'admin'], ['disponible', 'yes']])->inRandomOrder()->first();
-
             if ($user && $admin) {
-
                 Message::create([
                     'message' => $message,
                     'sender_id' => Auth::user()->id,
@@ -103,7 +112,23 @@ class ChatController extends Controller
 
                 $messages = Message::all();
 
-                event(new MessageEvent($messages));
+                // Generate a new timestamp
+                $timestamp = time();
+
+                // Trigger a Pusher event with the new timestamp
+                $pusher = new Pusher(
+                    env('PUSHER_APP_KEY'),
+                    env('PUSHER_APP_SECRET'),
+                    env('PUSHER_APP_ID'),
+                    [
+                        'cluster' => env('PUSHER_APP_CLUSTER'),
+                        'useTLS' => true
+                    ]
+                );
+                $pusher->trigger('my-channel', 'my-event', [
+                    'message' => $message,
+                    'timestamp' => $timestamp,
+                ]);
 
                 return response()->json(['message' => $message], 200);
             } else {
