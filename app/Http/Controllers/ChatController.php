@@ -77,8 +77,10 @@ class ChatController extends Controller
 
                 $messages = Message::all();
 
-                // Generate a new timestamp
-                $timestamp = time();
+                // Generate a new timestamp that is within the acceptable range
+                $now = time();
+                $tenMinutesAgo = $now - 600;
+                $timestamp = rand($tenMinutesAgo, $now);
 
                 // Trigger a Pusher event with the new timestamp
                 $pusher = new Pusher(
@@ -112,8 +114,10 @@ class ChatController extends Controller
 
                 $messages = Message::all();
 
-                // Generate a new timestamp
-                $timestamp = time();
+                // Generate a new timestamp that is within the acceptable range
+                $now = time();
+                $tenMinutesAgo = $now - 600;
+                $timestamp = rand($tenMinutesAgo, $now);
 
                 // Trigger a Pusher event with the new timestamp
                 $pusher = new Pusher(
