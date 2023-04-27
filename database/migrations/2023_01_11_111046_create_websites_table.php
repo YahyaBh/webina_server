@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('image')->nullable();
             $table->string('website_name');
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->enum('hot' , ['yes', 'no'])->default('no');
             $table->string('website_url')->nullable();
             $table->string('website_tags')->nullable();

@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\Orders;
 use App\Models\User;
 use App\Models\Websites;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -25,7 +26,7 @@ class OrdersController extends Controller
         if ($user) {
 
 
-            $orders = Orders::where('user_id', $user->id)->orderBy('created_at' , 'desc')->get();
+            $orders = Orders::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
 
             return response()->json([
                 'status' => 'success',
@@ -88,6 +89,27 @@ class OrdersController extends Controller
                 'status' => 'failed',
                 'message' => 'Something went wrong'
             ], 401);
+        }
+    }
+
+
+    public function order_download(Request $request)
+    {
+
+        $request->validate([
+            'order_token' => 'required',
+        ]);
+
+        try {
+            $order = Orders::where('order_number', $request->order_token)->first();
+
+            $file = public_path() . "/uploads/orders/files/" . $order->file;
+            return response()->download($file);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => $e->getMessage(),
+            ], 405);
         }
     }
 }

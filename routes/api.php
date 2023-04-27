@@ -67,6 +67,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/admin/orders', [AdminDashboardController::class, 'getOrders'])->name('admin.orders');//orders
         Route::post('/admin/order', [AdminDashboardController::class, 'getOrder'])->name('admin.order');//single order
         Route::post('/admin/order/status', [AdminDashboardController::class, 'setOrderStatus'])->name('admin.order.status');
+        Route::post('/admin/sendFile/order' , [AdminDashboardController::class, 'sendFileOrder'])->name('admin.file.order');
 
         Route::post('/admin/websites', [AdminDashboardController::class, 'website_index'])->name('admin.websites');//websites
 
@@ -98,6 +99,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/orders', [OrdersController::class, 'orders_all'])->name('orders');//user orders
     Route::post('/order', [OrdersController::class, 'order_show'])->name('show_order');//single user order
+    Route::post('/order/download/', [OrdersController::class, 'order_download'])->name('show_order');//single user order
+
 
     Route::post('/checkout', [CheckoutController::class, 'paymecntCheck'])->name('checkout');//checkout pager
     Route::post('/checkout/paypal', [CheckoutController::class, 'paypalcheckout'])->name('checkout.paypalcheckout');//checkout paypal

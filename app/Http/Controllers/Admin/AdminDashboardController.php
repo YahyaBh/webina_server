@@ -13,6 +13,7 @@ use App\Models\Orders;
 use App\Models\Payment;
 use App\Models\User;
 use App\Models\Websites;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -555,6 +556,38 @@ class AdminDashboardController extends Controller
                 'request' => $request->type
 
             ], 200);
+        }
+    }
+
+
+    public function sendFileOrder(Request $request)
+    {
+
+        $request->validate([
+            'file' => 'required',
+            'order_id' => 'required',
+        ]);
+
+        $order = Orders::findOrFail($request->order_id);
+
+        try {
+
+            $file = $request->file('file');
+            $fileName = time() . '.' . $file->getClientOriginalExtension();
+            $file->move('uploads/orders/files', $fileName);
+
+            $order->update([
+                'file' => $fileName
+            ]);
+
+            return response()->json([
+                'message' => 'Success',
+                'order' => $order
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'errors' => $e->getMessage()
+            ], 404);
         }
     }
 }
