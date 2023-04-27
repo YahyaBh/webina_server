@@ -59,6 +59,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/admin/chat/user', [AdminChatController::class, 'user_messages'])->name('admin.User.chat'); //admin chat single user
 
         Route::post('/admin/users', [AdminDashboardController::class, 'users_index'])->name('admin.users');//users
+        Route::get('/admin/user/{id}', [AdminDashboardController::class, 'user_index'])->name('admin.user');//users
+        Route::delete('/admin/user/{id}', [AdminDashboardController::class, 'user_del'])->name('admin.user.delete');//users
+
+
 
         Route::post('/admin/orders', [AdminDashboardController::class, 'getOrders'])->name('admin.orders');//orders
         Route::post('/admin/order', [AdminDashboardController::class, 'getOrder'])->name('admin.order');//single order

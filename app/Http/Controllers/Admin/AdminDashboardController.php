@@ -187,6 +187,42 @@ class AdminDashboardController extends Controller
     }
 
 
+    public function user_index($id)
+    {
+
+        $user = User::where('id', $id)->first();
+
+        if ($user) {
+            return response()->json([
+                'user' => $user,
+                'message' => 'Success'
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'user not found'
+            ], 404);
+        }
+    }
+
+    public function user_del($id)
+    {
+        $user = User::where('id', $id)->first();
+
+        if ($user) {
+
+            $user->delete();
+
+            return response()->json([
+                'message' => 'Success'
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'user not found'
+            ], 404);
+        }
+    }
+
+
     public function setOrderStatus(Request $request)
     {
 
