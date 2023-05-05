@@ -21,6 +21,7 @@ return new class extends Migration
             $table->enum('status', ['pending', 'processing', 'completed', 'decline'])->default('pending');
             $table->float('grand_total');
             $table->integer('item_count');
+            $table->string('file')->nullable();
             $table->boolean('is_paid')->default(false);
             $table->enum('payment_method', ['cash_on_delivery' , 'paypal' , 'credit_card'])->default('credit_card');
             $table->string('notes')->nullable();
