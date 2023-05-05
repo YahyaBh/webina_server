@@ -108,7 +108,8 @@ class OrdersController extends Controller
             if ($order->status === 'completed') {
 
                 if ($order->file) {
-                    $file = public_path() . "/uploads/orders/files/" . $order->file;
+                    
+                    $file = public_path() . "/uploads/orders/files/$order->file";
 
                     return response()->download($file);
                 } else {

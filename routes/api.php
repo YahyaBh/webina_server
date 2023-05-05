@@ -99,7 +99,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/orders', [OrdersController::class, 'orders_all'])->name('orders');//user orders
     Route::post('/order', [OrdersController::class, 'order_show'])->name('show_order');//single user order
-    Route::post('/order/download/', [OrdersController::class, 'order_download'])->name('show_order');//single user order
+    Route::post('/order/download/', [OrdersController::class, 'order_download'])->name('download_order');//single user order
 
 
     Route::post('/checkout', [CheckoutController::class, 'paymecntCheck'])->name('checkout');//checkout pager

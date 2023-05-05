@@ -565,10 +565,12 @@ class AdminDashboardController extends Controller
 
         $request->validate([
             'file' => 'required',
-            'order_id' => 'required',
+            'order_token' => 'required',
         ]);
 
-        $order = Orders::findOrFail($request->order_id);
+
+        $order = Orders::where('order_number', $request->order_token)->first();
+
 
         try {
 
@@ -576,14 +578,24 @@ class AdminDashboardController extends Controller
             $fileName = time() . '.' . $file->getClientOriginalExtension();
             $file->move('uploads/orders/files', $fileName);
 
-            $order->update([
-                'file' => $fileName
-            ]);
 
-            return response()->json([
-                'message' => 'Success',
-                'order' => $order
-            ], 200);
+            try {
+
+                $order->file = $fileName;
+
+                $order->save();
+
+                return response()->json([
+                    'message' => 'Success',
+                    'order' => $order
+                ], 200);
+
+                dd($order->file);
+            } catch (Exception $e) {
+                return response()->json([
+                    'errors' => $e->getMessage()
+                ], 404);
+            }
         } catch (Exception $e) {
             return response()->json([
                 'errors' => $e->getMessage()

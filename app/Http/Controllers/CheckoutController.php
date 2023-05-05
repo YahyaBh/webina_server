@@ -75,6 +75,7 @@ class CheckoutController extends Controller
                     'grand_total' => $request->price,
                     'item_count' => 1,
                     'is_paid' => true,
+                    'file' => $request->file,
                     'payment_method' => 'credit_card',
                     'notes' => $request->description,
                     'website_token' => $request->website_token,
