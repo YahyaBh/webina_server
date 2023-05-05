@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Orders;
 use App\Models\Reviews;
 use App\Models\User;
 use App\Models\Websites;
@@ -27,34 +26,12 @@ class WebsitesController extends Controller
     public function download_website(Request $request)
     {
         $request->validate([
-            'order_token' => 'required',
+            'pdf_theme_name' => 'required',
         ]);
 
-        $order = Orders::find($request->order_token);
+        $file = public_path() . "/uploads/websites/themes/$request->pdf_theme_name";
 
-        if ($order) {
-
-            if ($order->status === 'completed') {
-
-                if ($order->file) {
-                    $file = public_path() . "/uploads/websites/themes/$request->pdf_theme_name";
-
-                    return response()->download($file);
-                } else {
-                    return response()->json([
-                        'message' => 'website files is not found'
-                    ], 404);
-                }
-            } else {
-                return response()->json([
-                    'message' => 'Webiste order is not completed'
-                ], 404);
-            }
-        } else {
-            return response()->json([
-                'message' => 'Unable to find order website'
-            ], 404);
-        }
+        return response()->download($file);
     }
 
 

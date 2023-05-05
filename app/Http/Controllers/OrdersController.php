@@ -96,20 +96,35 @@ class OrdersController extends Controller
     public function order_download(Request $request)
     {
 
+
         $request->validate([
             'order_token' => 'required',
         ]);
 
-        try {
-            $order = Orders::where('order_number', $request->order_token)->first();
+        $order = Orders::where('order_number', $request->order_token)->first();;
 
-            $file = public_path() . "/uploads/orders/files/" . $order->file;
-            return response()->download($file);
-        } catch (Exception $e) {
+        if ($order) {
+
+            if ($order->status === 'completed') {
+
+                if ($order->file) {
+                    $file = public_path() . "/uploads/orders/files/" . $order->file;
+
+                    return response()->download($file);
+                } else {
+                    return response()->json([
+                        'message' => 'website files is not found'
+                    ], 404);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'Webiste order is not completed'
+                ], 404);
+            }
+        } else {
             return response()->json([
-                'status' => 'failed',
-                'message' => $e->getMessage(),
-            ], 405);
+                'message' => 'Unable to find order website'
+            ], 404);
         }
     }
 }
