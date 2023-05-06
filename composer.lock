@@ -1,9 +1,6 @@
 {
     "_readme": [
-        "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
-        "This file is @generated automatically"
-    ],
+        "WebIna Always Under Service"],
     "content-hash": "c70e052f8cc323ae98d55391f33199ae",
     "packages": [
         {
